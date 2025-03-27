@@ -1,0 +1,116 @@
+# Detecção de Status Offline no Chataigne usando Custom Variables
+
+Como o módulo Time do Chataigne não oferece um cronômetro simples, vamos criar uma solução de watchdog usando Custom Variables e Sequences.
+
+## Passo 1: Configurar Variáveis Personalizadas
+
+1. No painel "Custom Variables", crie um novo grupo:
+   - Clique no "+" para adicionar um grupo
+   - Nome: "Sistema"
+
+2. Dentro deste grupo, adicione as seguintes variáveis:
+   - `ultimoHeartbeat` (tipo: Integer) - armazenará o horário do último heartbeat
+   - `estadoConexao` (tipo: Boolean) - indicará se o ESP32 está online (true) ou offline (false)
+   - `timeoutSegundos` (tipo: Integer, valor inicial: 10) - tempo em segundos para considerar offline
+
+## Passo 2: Criar uma Sequência para Verificar o Status
+
+1. Vá para o painel "Sequences" e crie uma nova sequência:
+   - Nome: "VerificarConexaoESP32"
+
+2. Configure a sequência para executar a cada segundo:
+   - Na seção "Sequence Editor", defina "Loop": True
+   - Defina "Rate": 1000ms (executa a cada 1 segundo)
+
+3. Adicione comandos à sequência:
+   - Clique no "+" na sequência para adicionar comandos
+
+4. Adicione um Command Tester com este script JavaScript:
+```
+// Obter o tempo atual em segundos
+var tempoAtual = Math.floor(Date.now() / 1000);
+
+// Obter o último tempo de heartbeat
+var ultimoHeartbeat = root.customVariables.Sistema.ultimoHeartbeat.get();
+
+// Obter o timeout configurado
+var timeoutSegundos = root.customVariables.Sistema.timeoutSegundos.get();
+
+// Verificar se passou mais tempo que o timeout desde o último heartbeat
+if (tempoAtual - ultimoHeartbeat > timeoutSegundos) {
+    // Se passou mais tempo que o timeout, definir como offline
+    if (root.customVariables.Sistema.estadoConexao.get() == true) {
+        root.customVariables.Sistema.estadoConexao.set(false);
+        script.log("ESP32 OFFLINE - Sem comunicação por " + (tempoAtual - ultimoHeartbeat) + " segundos");
+    }
+} else {
+    // Se não passou mais tempo que o timeout, definir como online
+    if (root.customVariables.Sistema.estadoConexao.get() == false) {
+        root.customVariables.Sistema.estadoConexao.set(true);
+        script.log("ESP32 ONLINE - Comunicação restabelecida");
+    }
+}
+```
+
+## Passo 3: Configurar a Atualização do Heartbeat
+
+1. Vá para a aba "Mappings" e crie um novo mapeamento:
+   - Fonte: Módulo WebSocket > Eventos > Data Received
+   - Filtro de Fonte: (não necessário, todas as mensagens contam como heartbeat)
+   - Destino: Custom Variables > Sistema > ultimoHeartbeat
+   - Função: Script personalizado:
+   ```
+   return Math.floor(Date.now() / 1000);
+   ```
+
+2. Você também pode adicionar um mapeamento específico para mensagens do tipo "status":
+   - Fonte: Módulo WebSocket > Values > tipo
+   - Filtro de Fonte: "status"
+   - Destino: Custom Variables > Sistema > ultimoHeartbeat
+   - Função: Script personalizado:
+   ```
+   return Math.floor(Date.now() / 1000);
+   ```
+
+## Passo 4: Inicialização do Sistema
+
+1. Adicione uma sequência de inicialização:
+   - Nome: "Inicialização"
+   - Configuração: Execute apenas uma vez no início
+
+2. Adicione um Command Tester com este script:
+```
+// Inicializa o timestamp do último heartbeat
+root.customVariables.Sistema.ultimoHeartbeat.set(Math.floor(Date.now() / 1000));
+
+// Inicializa o estado de conexão como offline até receber o primeiro heartbeat
+root.customVariables.Sistema.estadoConexao.set(false);
+
+script.log("Sistema de detecção de status online/offline inicializado");
+```
+
+## Passo 5: Adicionar Indicadores Visuais (opcional)
+
+1. Vá para a aba "Dashboard" e adicione um indicador para o estado de conexão:
+   - Adicione um "Boolean Parameter"
+   - Vincule-o à variável `root.customVariables.Sistema.estadoConexao`
+   - Configure para mostrar verde quando true (online) e vermelho quando false (offline)
+
+2. Você também pode adicionar indicadores para o uptime do ESP32, status WiFi, etc.
+
+## Passo 6: Ações com Base no Estado de Conexão (opcional)
+
+1. Você pode criar mapeamentos que reagem a mudanças no estado de conexão:
+   - Fonte: Custom Variables > Sistema > estadoConexao
+   - Destino: Qualquer ação que desejar quando o status mudar
+
+2. Por exemplo, enviar comandos para reiniciar ou emitir alertas quando o estado muda para offline.
+
+## Como Funciona
+
+1. Cada vez que uma mensagem é recebida do ESP32, o timestamp do último heartbeat é atualizado
+2. A sequência verifica a cada segundo se o timestamp está dentro do limite de timeout
+3. Se não receber mensagens dentro do timeout, define o estado como offline
+4. Quando mensagens voltam a ser recebidas, define o estado como online
+
+Esta implementação é mais flexível que a abordagem com timers e permite ajustar facilmente o comportamento conforme necessário. 

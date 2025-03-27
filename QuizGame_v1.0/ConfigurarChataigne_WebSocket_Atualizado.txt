@@ -1,0 +1,91 @@
+# Configuração Atualizada do Chataigne para WebSocket com ESP32
+
+Este guia atualizado explica como configurar o Chataigne para mapear corretamente os valores dos botões recebidos do ESP32 via WebSocket.
+
+## Passo 1: Verificar a Configuração do WebSocket no Chataigne
+
+1. No módulo WebSocket, verifique se:
+   - **Server mode**: Está ativado
+   - **Local port**: 9999
+   - **Is Bound**: Está ativado
+   - **Message Structure**: JSON
+   - **JSON Mode**: Parse
+
+## Passo 2: Mapear os valores no formato correto
+
+Com o novo formato JSON que implementamos, os valores dos botões estão disponíveis diretamente na raiz do objeto JSON, não mais dentro do objeto "botoes". Isso facilita o mapeamento.
+
+1. Na seção "Values" do módulo WebSocket, para cada botão:
+   - Clique no botão "+" para adicionar um valor (ou use valores existentes)
+   - Nomeie-os conforme: j1a, j1b, j1c, j2a, j2b, j2c, j3a, j3b, j3c
+   - **NÃO configure nenhum caminho JSON** para valores mapeados diretamente pela propriedade.
+   
+2. O Chataigne deve detectar automaticamente os valores no objeto JSON raiz. Se não detectar:
+   - Configure o caminho JSON para cada botão como "/" + nome do botão
+   - Por exemplo, para j1a: "/j1a"
+   
+## Passo 3: Testando a Recepção Direta dos Valores
+
+1. Verifique se os valores dos botões estão sendo atualizados quando:
+   - Os botões são pressionados/soltos
+   - O ESP32 envia atualizações de status
+
+2. No console do Chataigne (Logger), deve ver mensagens JSON como:
+   ```json
+   {
+     "tipo": "botao",
+     "botao": "j1a",
+     "estado": 1,
+     "j1a": 1
+   }
+   ```
+   
+   E mensagens de status com formato:
+   ```json
+   {
+     "tipo": "status",
+     "ip": "192.168.88.xxx",
+     "rssi": -65,
+     "uptime": 120,
+     "j1a": 0,
+     "j1b": 0,
+     ...
+     "botoes": {
+       ...
+     }
+   }
+   ```
+
+## Passo 4: Resolução de Problemas
+
+Se ainda tiver problemas com o mapeamento:
+
+1. Verifique no Logger se o formato das mensagens recebidas corresponde ao formato esperado
+2. Tente recriar os valores no Chataigne:
+   - Remova os valores existentes
+   - Adicione-os novamente um por um, deixando o nome exatamente igual ao campo no JSON (j1a, j1b, etc.)
+   
+3. Use um caminho JSON explícito:
+   - Configure o caminho JSON para "/{NOME_DO_VALOR}"
+   - Por exemplo, para j1a, caminho JSON: "/j1a"
+   
+4. Reinicie o Chataigne se necessário para carregar as novas configurações
+
+## Passo 5: Comandos para Testar
+
+Use estes comandos para testar a comunicação:
+- `status` - Solicita o estado atual de todos os botões
+- `vivo` - Verifica se o ESP32 está respondendo
+- `ping` - Teste simples de conexão
+- `reiniciar` - Reinicia o ESP32
+
+## Exemplo de Mapeamento Visual
+
+Para cada botão:
+```
+Nome: j1a
+Tipo: Integer
+Caminho JSON: /j1a (opcional, geralmente detectado automaticamente)
+```
+
+Com esta configuração, o Chataigne deve detectar e atualizar corretamente os valores dos botões quando eles mudarem. 

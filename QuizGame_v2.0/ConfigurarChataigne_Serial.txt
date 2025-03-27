@@ -1,0 +1,140 @@
+# Configuração do Chataigne para Quiz Game v2.0 (ESP-NOW + Serial)
+
+Este guia explica como configurar o Chataigne para receber dados do sistema Quiz Game v2.0, que utiliza ESP-NOW para comunicação entre os dispositivos e Serial para comunicação com o computador.
+
+## Passo 1: Adicionar Módulo Serial no Chataigne
+
+1. Abra o Chataigne
+2. Clique em "+" na área de módulos para adicionar um novo módulo
+3. Selecione "Hardware > Serial"
+4. O módulo Serial será adicionado à sua interface
+
+## Passo 2: Configuração do Módulo Serial
+
+1. No módulo Serial, configure:
+   - **Port**: Selecione a porta COM onde o ESP32 Master está conectado (ex: COM3, /dev/ttyUSB0, etc.)
+   - **Baud Rate**: 115200
+   - **Auto Add**: Ative esta opção
+   - **Message Structure**: Selecione "Colon (:) separated" 
+   - **First value is the name**: Ative esta opção
+
+2. Clique em "Connect" para estabelecer a conexão com o ESP32 Master
+
+## Passo 3: Verificação da configuração correta
+
+A configuração adequada do Serial é fundamental para o funcionamento correto do sistema:
+
+1. **Message Structure** deve estar como "Colon (:) separated" e não como JSON
+2. **First value is the name** deve estar ativado
+3. Estas configurações garantem que os valores dos botões apareçam como componentes numéricos únicos (0 ou 1)
+
+Se estiver recebendo mensagens mas os valores estiverem aparecendo como separados (j1a, j1a:0, etc.), verifique estas configurações.
+
+## Passo 4: Mapear os valores recebidos
+
+O sistema envia mensagens JSON em vários formatos. Os principais são:
+
+### 1. Mensagens de Botão:
+```json
+{
+  "tipo": "botao",
+  "botao": "j1a",
+  "estado": 1,
+  "j1a": 1,
+  "rssi": -65
+}
+```
+
+### 2. Mensagens de Status:
+```json
+{
+  "tipo": "status",
+  "dispositivo": "Jogador 1",
+  "online": true,
+  "rssi": -65
+}
+```
+
+### 3. Mensagens de Status Geral:
+```json
+{
+  "tipo": "status_geral",
+  "dispositivos": [
+    {"nome": "Jogador 1", "online": true, "tempo_conectado": 120},
+    {"nome": "Jogador 2", "online": true, "tempo_conectado": 115},
+    {"nome": "Jogador 3", "online": false}
+  ]
+}
+```
+
+Para mapear estes valores:
+
+1. Na seção "Values" do módulo Serial, adicione:
+   - **j1a, j1b, j1c, j2a, j2b, j2c, j3a, j3b, j3c** - Para os estados dos botões
+   - **jogador1_online, jogador2_online, jogador3_online** - Para o status de conexão
+   - **jogador1_rssi, jogador2_rssi, jogador3_rssi** - Para a força de sinal
+
+2. Configure o mapeamento JSON:
+   - O Chataigne deve detectar automaticamente os valores pela chave nos objetos JSON
+   - Se necessário, configure o caminho JSON explicitamente, como "/estado" para botões
+
+## Passo 5: Comandos para enviar ao ESP32 Master
+
+O ESP32 Master aceita comandos via Serial. Configure estes comandos na seção "Command Tester":
+
+1. **status** - Solicita o status de todos os dispositivos
+2. **ping 1** - Envia ping para o Jogador 1 (também funciona com 2 e 3)
+
+Para enviar comandos:
+- Digite o comando no campo de texto
+- Clique em "Send" para enviar o comando
+
+## Passo 6: Configuração do Dashboard
+
+Crie um dashboard informativo que mostre:
+
+1. O estado de todos os botões:
+   - Adicione indicadores para j1a, j1b, j1c, j2a, j2b, j2c, j3a, j3b, j3c
+   - Configure-os como "Boolean Parameter" com cores diferentes para pressionado/solto
+
+2. Status de conexão de cada jogador:
+   - Adicione indicadores para jogador1_online, jogador2_online, jogador3_online
+   - Configure-os como "Boolean Parameter" com verde para online e vermelho para offline
+
+3. Indicadores de força de sinal (RSSI):
+   - Adicione indicadores para jogador1_rssi, jogador2_rssi, jogador3_rssi
+   - Configure-os como "Float Parameter" com gradiente de cores
+
+## Passo 7: Estado inicial do sistema
+
+Quando o sistema é iniciado:
+
+1. O ESP32 Master enviará mensagens de status para cada jogador conforme detectado
+2. Os botões iniciarão no estado solto (0)
+3. Você pode enviar o comando "status" para receber o estado atual de todos os dispositivos
+
+## Resolução de Problemas
+
+1. **Não recebe dados**:
+   - Verifique se a porta serial correta está selecionada
+   - Confirme se o ESP32 Master está ligado e conectado ao computador
+   - Verifique se o baud rate está configurado como 115200
+
+2. **Erro de formato JSON**:
+   - Verifique no Logger do Chataigne se o formato JSON está correto
+   - Confirme se a opção "Message Structure" está definida como JSON
+
+3. **Botões não aparecem**:
+   - Envie o comando "status" para solicitar uma atualização completa
+   - Verifique se os endereços MAC estão configurados corretamente no código
+
+4. **ESP32 Clientes não conectam**:
+   - Verifique no Serial Monitor do Arduino se os endereços MAC estão corretos
+   - Certifique-se de que os ESP32 Clientes estão ligados e próximos do Master
+
+## Notas Importantes
+
+- O ESP-NOW tem um alcance de aproximadamente 30-50 metros em ambientes abertos
+- Para melhor desempenho, mantenha os ESP32 Clientes a menos de 20 metros do Master
+- A comunicação via ESP-NOW é mais robusta que WiFi para este tipo de aplicação
+- A comunicação Serial é mais confiável que conexões de rede para integração com o Chataigne 
