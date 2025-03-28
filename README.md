@@ -88,305 +88,153 @@ Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICE
 
 Documentação atualizada em 28/03/2025.
 
-# Quiz Game API
+# API Quiz Game
 
-API para gerenciamento de um jogo de quiz com múltiplos jogadores.
+API para gerenciamento de um jogo de quiz multiplayer interativo.
 
-## Funcionalidades
+## Visão Geral
 
-- Gerenciamento de jogadores (cadastro, atualização, remoção)
-- Configuração de partidas (seleção de jogadores, duração, rodadas)
-- Controle de rodadas (início, fim, pontuação)
-- Sistema de ranking e histórico
-- Timer para controle de tempo
-- Estados do jogo (apresentação, selecao, aguardando, iniciada, rodada_ativa, finalizada)
-
-## Requisitos
-
-- Python 3.8+
-- Flask
-- Outras dependências listadas em `requirements.txt`
-
-## Instalação
-
-1. Clone o repositório:
-```bash
-git clone https://github.com/felipebrito/QuizGame-ESP32.git
-cd QuizGame-ESP32
-```
-
-2. Crie um ambiente virtual:
-```bash
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
-```
-
-3. Instale as dependências:
-```bash
-pip install -r requirements.txt
-```
-
-## Executando o Servidor
-
-### Método 1: Linha de Comando
-```bash
-python app.py
-```
-
-O servidor estará disponível em `http://localhost:5001`
-
-### Método 2: Scripts de Inicialização
-
-#### Windows
-Execute o arquivo `run_manager.bat` com duplo clique ou pelo terminal:
-```bash
-run_manager.bat
-```
-
-#### Linux/Mac
-Execute o script shell:
-```bash
-./run_manager.sh
-```
-
-## Interface de Gerenciamento
-
-O sistema inclui uma interface web para gerenciamento do jogo, que permite:
-
-- Cadastrar, editar e remover jogadores
-- Configurar parâmetros da partida
-- Controlar o fluxo do jogo (iniciar, finalizar rodadas, etc.)
-- Visualizar rankings e resultados
-
-Para acessar a interface:
-```
-http://localhost:5001/gerenciador
-```
-
-## Endpoints da API
-
-### Gerenciamento de Jogadores
-
-#### Cadastrar Jogador
-- **URL**: `/api/cadastrar_jogador`
-- **Método**: `POST`
-- **Descrição**: Cadastra um novo jogador
-- **Estado**: apresentacao
-- **Corpo**:
-```json
-{
-    "nome": "Nome do Jogador",
-    "foto": "URL da foto (opcional)"
-}
-```
-
-#### Listar Jogadores
-- **URL**: `/api/jogadores`
-- **Método**: `GET`
-- **Descrição**: Lista todos os jogadores cadastrados
-- **Estado**: apresentacao
-
-#### Obter Jogador
-- **URL**: `/api/jogador/<id>`
-- **Método**: `GET`
-- **Descrição**: Retorna os dados de um jogador específico
-- **Estado**: apresentacao
-
-#### Atualizar Jogador
-- **URL**: `/api/atualizar_jogador/<id>`
-- **Método**: `PUT`
-- **Descrição**: Atualiza os dados de um jogador
-- **Estado**: apresentacao
-- **Corpo**:
-```json
-{
-    "nome": "Novo Nome",
-    "foto": "Nova URL da foto"
-}
-```
-
-#### Remover Jogador
-- **URL**: `/api/remover_jogador/<id>`
-- **Método**: `DELETE`
-- **Descrição**: Remove um jogador cadastrado
-- **Estado**: apresentacao
-
-### Configuração da Partida
-
-#### Entrar no Modo Seleção
-- **URL**: `/api/modo_selecao`
-- **Método**: `POST`
-- **Descrição**: Entra no modo de seleção de jogadores
-- **Estado**: apresentacao
-
-#### Configurar Partida
-- **URL**: `/api/configurar_partida`
-- **Método**: `POST`
-- **Descrição**: Configura os parâmetros da partida
-- **Estado**: selecao
-- **Corpo**:
-```json
-{
-    "jogadores": [1, 2, 3],
-    "duracao_rodada": 30.0,
-    "total_rodadas": 10,
-    "tema": "default"
-}
-```
-
-#### Obter Configuração
-- **URL**: `/api/configuracao`
-- **Método**: `GET`
-- **Descrição**: Retorna a configuração atual
-- **Estado**: selecao
-
-#### Obter Jogadores Disponíveis
-- **URL**: `/api/jogadores_disponiveis`
-- **Método**: `GET`
-- **Descrição**: Retorna os jogadores disponíveis para seleção
-- **Estado**: selecao
-
-#### Obter Jogadores Selecionados
-- **URL**: `/api/jogadores_selecionados`
-- **Método**: `GET`
-- **Descrição**: Retorna os jogadores selecionados
-- **Estado**: selecao
-
-#### Obter Jogadores Não Selecionados
-- **URL**: `/api/jogadores_nao_selecionados`
-- **Método**: `GET`
-- **Descrição**: Retorna os jogadores não selecionados
-- **Estado**: selecao
-
-### Controle da Partida
-
-#### Aguardar
-- **URL**: `/api/aguardar`
-- **Método**: `POST`
-- **Descrição**: Aguarda o início da partida
-- **Estado**: selecao
-
-#### Iniciar Partida
-- **URL**: `/api/iniciar_partida`
-- **Método**: `POST`
-- **Descrição**: Inicia a partida com base na configuração
-- **Estado**: aguardando
-
-#### Iniciar Rodada
-- **URL**: `/api/iniciar_rodada`
-- **Método**: `POST`
-- **Descrição**: Inicia uma nova rodada
-- **Estado**: iniciada
-
-#### Finalizar Rodada
-- **URL**: `/api/finalizar_rodada`
-- **Método**: `POST`
-- **Descrição**: Finaliza a rodada atual
-- **Estado**: rodada_ativa
-- **Corpo**:
-```json
-{
-    "pontos": {
-        "1": 10,
-        "2": 5,
-        "3": 0
-    }
-}
-```
-
-### Status e Informações
-
-#### Obter Status
-- **URL**: `/api/status`
-- **Método**: `GET`
-- **Descrição**: Retorna o status atual do jogo
-
-#### Obter Partida
-- **URL**: `/api/partida`
-- **Método**: `GET`
-- **Descrição**: Retorna o status da partida
-- **Estado**: aguardando, iniciada, rodada_ativa, finalizada
-
-#### Obter Rodada
-- **URL**: `/api/rodada`
-- **Método**: `GET`
-- **Descrição**: Retorna o status da rodada atual
-- **Estado**: rodada_ativa
-
-#### Obter Timer
-- **URL**: `/api/timer`
-- **Método**: `GET`
-- **Descrição**: Retorna o status do timer
-- **Estado**: rodada_ativa
-
-#### Obter Participantes
-- **URL**: `/api/participantes`
-- **Método**: `GET`
-- **Descrição**: Retorna os participantes da partida
-- **Estado**: aguardando, iniciada, rodada_ativa, finalizada
-
-#### Obter Ranking
-- **URL**: `/api/ranking`
-- **Método**: `GET`
-- **Descrição**: Retorna o ranking dos jogadores
-- **Estado**: aguardando, iniciada, rodada_ativa, finalizada
-
-### Resultados e Histórico
-
-#### Obter Histórico
-- **URL**: `/api/historico`
-- **Método**: `GET`
-- **Descrição**: Retorna o histórico do jogo
-- **Estado**: apresentacao
-
-#### Obter Jogadores Vencedores
-- **URL**: `/api/jogadores_vencedores`
-- **Método**: `GET`
-- **Descrição**: Retorna os jogadores vencedores
-- **Estado**: finalizada
-
-#### Obter Jogadores Perdedores
-- **URL**: `/api/jogadores_perdedores`
-- **Método**: `GET`
-- **Descrição**: Retorna os jogadores perdedores
-- **Estado**: finalizada
-
-### Utilitários
-
-#### Reset
-- **URL**: `/api/reset`
-- **Método**: `POST`
-- **Descrição**: Reseta o jogo para o estado inicial
+Esta API permite criar e gerenciar partidas de quiz, com suporte a múltiplos jogadores, rodadas configuráveis, e sistema de pontuação. A API é construída em Flask e oferece endpoints para todas as funcionalidades necessárias para um jogo de quiz completo.
 
 ## Estados do Jogo
 
-1. **apresentacao**
-   - Estado inicial
-   - Permite cadastro e gerenciamento de jogadores
-   - Permite visualizar histórico
+O jogo possui os seguintes estados:
 
-2. **selecao**
-   - Permite selecionar jogadores e configurar parâmetros
-   - Permite visualizar jogadores disponíveis e selecionados
+- **apresentacao**: Modo inicial, exibindo ranking e aguardando início de partida
+- **selecao**: Seleção de jogadores e configuração da partida
+- **iniciada**: Partida iniciada, pronta para começar as rodadas
+- **abertura**: Abertura de uma nova rodada (countdown)
+- **rodada_ativa**: Rodada em andamento com pergunta ativa
+- **finalizada**: Partida finalizada, exibindo pontuações e vencedores
 
-3. **aguardando**
-   - Aguarda confirmação para iniciar a partida
-   - Permite visualizar configuração e participantes
+## Fluxo do Jogo
 
-4. **iniciada**
-   - Partida em andamento
-   - Permite iniciar rodadas
-   - Permite visualizar ranking e participantes
+O fluxo correto para uma partida é:
 
-5. **rodada_ativa**
-   - Rodada em andamento
-   - Timer ativo
-   - Permite finalizar rodada
+1. `/api/modo_apresentacao` - Iniciar em modo apresentação (tela inicial)
+2. `/api/nova_partida` - Criar nova partida (resetar estado)
+3. `/api/modo_selecao` - Entrar no modo de seleção de jogadores
+4. `/api/configurar_partida` - Configurar jogadores, rodadas e tempo
+5. `/api/iniciar_partida` - Iniciar a partida configurada
+6. Para cada rodada:
+   - `/api/abertura_rodada` - Iniciar abertura para a próxima rodada
+   - `/api/iniciar_rodada` - Iniciar a rodada com a pergunta
+   - `/api/enviar_resposta` - Jogadores enviam respostas
+   - `/api/verificar_avancar` - Verificar se pode avançar para próxima rodada
+7. Ao final, retornar ao modo apresentação
 
-6. **finalizada**
-   - Partida concluída
-   - Permite visualizar resultados e histórico
+## Endpoints da API
+
+### Configuração e Estado do Jogo
+
+- `GET /api/status` - Retorna o estado atual do jogo com todos os detalhes
+- `POST /api/modo_apresentacao` - Coloca o jogo em modo apresentação (tela inicial)
+- `POST /api/nova_partida` - Cria uma nova partida, resetando o estado do jogo
+- `POST /api/modo_selecao` - Ativa o modo de seleção de jogadores
+- `POST /api/configurar_partida` - Configura detalhes da partida (jogadores, rodadas, tempo)
+- `POST /api/iniciar_partida` - Inicia a partida configurada
+
+### Gerenciamento de Rodadas
+
+- `POST /api/abertura_rodada` - Inicia abertura para a próxima rodada (countdown)
+- `POST /api/iniciar_rodada` - Inicia uma rodada com pergunta
+- `POST /api/enviar_resposta` - Recebe resposta de um jogador
+- `GET /api/verificar_avancar` - Verifica se pode avançar para próxima rodada
+- `GET /api/pergunta_atual` - Obtém a pergunta atual da rodada
+
+### Gerenciamento de Jogadores
+
+- `POST /api/cadastrar_jogador` - Cadastra um novo jogador
+- `GET /api/jogadores` - Lista todos os jogadores cadastrados
+- `GET /api/jogadores_disponiveis` - Lista jogadores disponíveis para seleção
+- `DELETE /api/remover_jogador/<id>` - Remove um jogador cadastrado
+- `PUT /api/atualizar_jogador/<id>` - Atualiza dados de um jogador
+
+### Verificação de Estado
+
+- `GET /api/status_selecao` - Verifica status do modo seleção
+- `GET /api/status_rodada` - Verifica status da rodada atual
+- `GET /api/respostas_rodada` - Obtém respostas da rodada atual
+- `GET /api/ranking` - Obtém ranking atual da partida
+
+## Formatos de Requisição e Resposta
+
+### Configurar Partida
+
+**Requisição:**
+```json
+{
+  "jogadores": [1, 2, 3],
+  "duracao_rodada": 30,
+  "total_rodadas": 10,
+  "tema": "default"
+}
+```
+
+**Resposta:**
+```json
+{
+  "configuracao": {
+    "duracao_rodada": 30.0,
+    "jogadores_selecionados": [1, 2, 3],
+    "status": "validada",
+    "tema": "default",
+    "total_rodadas": 10
+  },
+  "mensagem": "Configuração da partida atualizada com sucesso"
+}
+```
+
+### Enviar Resposta
+
+**Requisição:**
+```json
+{
+  "jogador": "1",
+  "resposta": "A",
+  "tempo": "5.2"
+}
+```
+
+**Resposta:**
+```json
+{
+  "mensagem": "Resposta registrada com sucesso",
+  "resposta_registrada": true
+}
+```
+
+## Detalhes Importantes
+
+1. O campo `texto_proxima_rodada` no endpoint `/api/abertura_rodada` exibirá "FINAL" quando for a última rodada.
+2. O campo `texto_rodada_atual` no endpoint `/api/iniciar_rodada` exibirá "FINAL" quando for a última rodada.
+3. Para obter informações sobre a próxima rodada, use exclusivamente o endpoint `/api/verificar_avancar`.
+4. Ao iniciar uma nova partida, os estados anteriores são limpos, incluindo `texto_proxima_rodada`.
+
+## Exemplos de Uso
+
+### Iniciar uma nova partida
+
+```bash
+curl -X POST http://localhost:5001/api/modo_apresentacao
+curl -X POST http://localhost:5001/api/nova_partida
+curl -X POST http://localhost:5001/api/modo_selecao
+curl -X POST -H "Content-Type: application/json" -d '{"jogadores": [1, 2, 3], "duracao_rodada": 30, "total_rodadas": 10, "tema": "default"}' http://localhost:5001/api/configurar_partida
+curl -X POST http://localhost:5001/api/iniciar_partida
+```
+
+### Iniciar uma rodada
+
+```bash
+curl -X POST http://localhost:5001/api/abertura_rodada
+curl -X POST http://localhost:5001/api/iniciar_rodada
+```
+
+### Enviar uma resposta
+
+```bash
+curl -X POST -H "Content-Type: application/json" -d '{"jogador": "1", "resposta": "A", "tempo": "5.2"}' http://localhost:5001/api/enviar_resposta
+```
 
 ## Contribuindo
 

@@ -1,8 +1,12 @@
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 import time  # Importando o módulo time para controle do timer
+import os  # Importando o módulo os para matar processos
+import random  # Importando o módulo random para embaralhar perguntas
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
+app.jinja_env.variable_start_string = '{['  # Alterando de {{ para {[
+app.jinja_env.variable_end_string = ']}'    # Alterando de }} para ]}
 CORS(app)  # Permite requisições cross-origin
 
 # Rota para a interface de gerenciamento
@@ -232,6 +236,36 @@ def index():
                 "url": "/api/jogadores_perdedores",
                 "method": "GET",
                 "description": "Retorna os jogadores perdedores"
+            },
+            {
+                "url": "/api/nova_partida",
+                "method": "POST",
+                "description": "Cria uma nova partida, colocando o jogo no modo de seleção"
+            },
+            {
+                "url": "/api/abertura_rodada",
+                "method": "POST",
+                "description": "Inicia a abertura da rodada (15 segundos antes de iniciar efetivamente)"
+            },
+            {
+                "url": "/api/status_abertura",
+                "method": "GET",
+                "description": "Verifica o status da abertura da rodada"
+            },
+            {
+                "url": "/api/status_rodada",
+                "method": "GET",
+                "description": "Retorna o status da rodada atual"
+            },
+            {
+                "url": "/api/respostas_rodada",
+                "method": "GET",
+                "description": "Retorna as respostas dos jogadores na rodada atual"
+            },
+            {
+                "url": "/api/verificar_avancar",
+                "method": "GET",
+                "description": "Verifica o status da rodada e avança automaticamente se necessário"
             }
         ],
         "status": "API Quiz Game - Online",
@@ -241,7 +275,7 @@ def index():
     return jsonify(endpoints)
 
 # Dados de exemplo
-perguntas = [
+todas_perguntas = [
     {
         "id": 1,
         "texto": "Qual a capital do Brasil?",
@@ -274,8 +308,198 @@ perguntas = [
             {"opcao": "C", "texto": "1981"}
         ],
         "resposta_correta": "A"
+    },
+    {
+        "id": 4,
+        "texto": "Qual é o maior planeta do Sistema Solar?",
+        "tema": "Astronomia",
+        "respostas": [
+            {"opcao": "A", "texto": "Terra"},
+            {"opcao": "B", "texto": "Júpiter"},
+            {"opcao": "C", "texto": "Saturno"}
+        ],
+        "resposta_correta": "B"
+    },
+    {
+        "id": 5,
+        "texto": "Qual destes não é um elemento químico?",
+        "tema": "Ciência",
+        "respostas": [
+            {"opcao": "A", "texto": "Hidrogênio"},
+            {"opcao": "B", "texto": "Adamantium"},
+            {"opcao": "C", "texto": "Oxigênio"}
+        ],
+        "resposta_correta": "B"
+    },
+    {
+        "id": 6,
+        "texto": "Quem escreveu 'Dom Quixote'?",
+        "tema": "Literatura",
+        "respostas": [
+            {"opcao": "A", "texto": "Miguel de Cervantes"},
+            {"opcao": "B", "texto": "William Shakespeare"},
+            {"opcao": "C", "texto": "Machado de Assis"}
+        ],
+        "resposta_correta": "A"
+    },
+    {
+        "id": 7,
+        "texto": "Qual é o maior oceano do mundo?",
+        "tema": "Geografia",
+        "respostas": [
+            {"opcao": "A", "texto": "Atlântico"},
+            {"opcao": "B", "texto": "Índico"},
+            {"opcao": "C", "texto": "Pacífico"}
+        ],
+        "resposta_correta": "C"
+    },
+    {
+        "id": 8,
+        "texto": "Em que ano começou a Segunda Guerra Mundial?",
+        "tema": "História",
+        "respostas": [
+            {"opcao": "A", "texto": "1939"},
+            {"opcao": "B", "texto": "1914"},
+            {"opcao": "C", "texto": "1945"}
+        ],
+        "resposta_correta": "A"
+    },
+    {
+        "id": 9,
+        "texto": "Qual é o metal mais precioso?",
+        "tema": "Ciência",
+        "respostas": [
+            {"opcao": "A", "texto": "Ouro"},
+            {"opcao": "B", "texto": "Platina"},
+            {"opcao": "C", "texto": "Prata"}
+        ],
+        "resposta_correta": "B"
+    },
+    {
+        "id": 10,
+        "texto": "Quem é considerado o pai da física moderna?",
+        "tema": "Ciência",
+        "respostas": [
+            {"opcao": "A", "texto": "Isaac Newton"},
+            {"opcao": "B", "texto": "Albert Einstein"},
+            {"opcao": "C", "texto": "Galileu Galilei"}
+        ],
+        "resposta_correta": "C"
+    },
+    {
+        "id": 11,
+        "texto": "Qual é a capital do Japão?",
+        "tema": "Geografia",
+        "respostas": [
+            {"opcao": "A", "texto": "Pequim"},
+            {"opcao": "B", "texto": "Seul"},
+            {"opcao": "C", "texto": "Tóquio"}
+        ],
+        "resposta_correta": "C"
+    },
+    {
+        "id": 12,
+        "texto": "Quem escreveu 'Romeu e Julieta'?",
+        "tema": "Literatura",
+        "respostas": [
+            {"opcao": "A", "texto": "William Shakespeare"},
+            {"opcao": "B", "texto": "Charles Dickens"},
+            {"opcao": "C", "texto": "Jane Austen"}
+        ],
+        "resposta_correta": "A"
+    },
+    {
+        "id": 13,
+        "texto": "Qual é o país mais populoso do mundo?",
+        "tema": "Geografia",
+        "respostas": [
+            {"opcao": "A", "texto": "Índia"},
+            {"opcao": "B", "texto": "China"},
+            {"opcao": "C", "texto": "Estados Unidos"}
+        ],
+        "resposta_correta": "B"
+    },
+    {
+        "id": 14,
+        "texto": "Quem foi o primeiro homem a pisar na Lua?",
+        "tema": "História",
+        "respostas": [
+            {"opcao": "A", "texto": "Buzz Aldrin"},
+            {"opcao": "B", "texto": "Yuri Gagarin"},
+            {"opcao": "C", "texto": "Neil Armstrong"}
+        ],
+        "resposta_correta": "C"
+    },
+    {
+        "id": 15,
+        "texto": "Qual é a montanha mais alta do mundo?",
+        "tema": "Geografia",
+        "respostas": [
+            {"opcao": "A", "texto": "Monte Everest"},
+            {"opcao": "B", "texto": "K2"},
+            {"opcao": "C", "texto": "Monte Aconcágua"}
+        ],
+        "resposta_correta": "A"
+    },
+    {
+        "id": 16,
+        "texto": "Quem pintou 'A Noite Estrelada'?",
+        "tema": "Arte",
+        "respostas": [
+            {"opcao": "A", "texto": "Pablo Picasso"},
+            {"opcao": "B", "texto": "Vincent Van Gogh"},
+            {"opcao": "C", "texto": "Leonardo da Vinci"}
+        ],
+        "resposta_correta": "B"
+    },
+    {
+        "id": 17,
+        "texto": "Qual é a capital da Austrália?",
+        "tema": "Geografia",
+        "respostas": [
+            {"opcao": "A", "texto": "Sydney"},
+            {"opcao": "B", "texto": "Melbourne"},
+            {"opcao": "C", "texto": "Camberra"}
+        ],
+        "resposta_correta": "C"
+    },
+    {
+        "id": 18,
+        "texto": "Qual é o menor planeta do Sistema Solar?",
+        "tema": "Astronomia",
+        "respostas": [
+            {"opcao": "A", "texto": "Mercúrio"},
+            {"opcao": "B", "texto": "Marte"},
+            {"opcao": "C", "texto": "Vênus"}
+        ],
+        "resposta_correta": "A"
+    },
+    {
+        "id": 19,
+        "texto": "Qual é o maior animal terrestre?",
+        "tema": "Biologia",
+        "respostas": [
+            {"opcao": "A", "texto": "Girafa"},
+            {"opcao": "B", "texto": "Elefante africano"},
+            {"opcao": "C", "texto": "Rinoceronte"}
+        ],
+        "resposta_correta": "B"
+    },
+    {
+        "id": 20,
+        "texto": "Quem escreveu 'Cem Anos de Solidão'?",
+        "tema": "Literatura",
+        "respostas": [
+            {"opcao": "A", "texto": "Pablo Neruda"},
+            {"opcao": "B", "texto": "Jorge Luis Borges"},
+            {"opcao": "C", "texto": "Gabriel García Márquez"}
+        ],
+        "resposta_correta": "C"
     }
 ]
+
+# Perguntas selecionadas para a partida atual
+perguntas = []
 
 # Estrutura inicial da partida
 partida = {
@@ -362,8 +586,171 @@ jogadores_cadastrados = {
     ]
 }
 
+# Função para selecionar perguntas aleatoriamente
+def selecionar_perguntas_aleatorias():
+    try:
+        # Determina quantas perguntas selecionar
+        total_perguntas = partida["configuracao"]["total_rodadas"]
+        
+        # Verifica se há perguntas suficientes no banco
+        if total_perguntas > len(todas_perguntas):
+            app.logger.warning(f"Total de perguntas solicitadas ({total_perguntas}) maior que o disponível ({len(todas_perguntas)}). Usando todas disponíveis.")
+            perguntas_selecionadas = todas_perguntas.copy()
+        else:
+            # Seleciona um subconjunto aleatório das perguntas
+            perguntas_selecionadas = random.sample(todas_perguntas, total_perguntas)
+        
+        app.logger.info(f"Selecionadas {len(perguntas_selecionadas)} perguntas aleatórias para a partida")
+        return perguntas_selecionadas
+    except Exception as e:
+        app.logger.error(f"Erro ao selecionar perguntas aleatórias: {str(e)}")
+        # Em caso de erro, retorna uma lista vazia ou todas as perguntas disponíveis
+        if todas_perguntas:
+            app.logger.info(f"Retornando todas as {len(todas_perguntas)} perguntas disponíveis como backup")
+            return todas_perguntas.copy()
+        else:
+            app.logger.error("Nenhuma pergunta disponível no banco de perguntas")
+            # Perguntas de emergência para garantir o funcionamento
+            return [
+                {
+                    "id": 1,
+                    "texto": "Pergunta de emergência 1",
+                    "tema": "Geral",
+                    "respostas": [
+                        {"opcao": "A", "texto": "Opção A"},
+                        {"opcao": "B", "texto": "Opção B"},
+                        {"opcao": "C", "texto": "Opção C"},
+                        {"opcao": "D", "texto": "Opção D"}
+                    ],
+                    "resposta_correta": "A"
+                },
+                {
+                    "id": 2,
+                    "texto": "Pergunta de emergência 2",
+                    "tema": "Geral",
+                    "respostas": [
+                        {"opcao": "A", "texto": "Opção A"},
+                        {"opcao": "B", "texto": "Opção B"},
+                        {"opcao": "C", "texto": "Opção C"},
+                        {"opcao": "D", "texto": "Opção D"}
+                    ],
+                    "resposta_correta": "B"
+                },
+                {
+                    "id": 3,
+                    "texto": "Pergunta de emergência 3",
+                    "tema": "Geral",
+                    "respostas": [
+                        {"opcao": "A", "texto": "Opção A"},
+                        {"opcao": "B", "texto": "Opção B"},
+                        {"opcao": "C", "texto": "Opção C"},
+                        {"opcao": "D", "texto": "Opção D"}
+                    ],
+                    "resposta_correta": "C"
+                },
+                {
+                    "id": 4,
+                    "texto": "Pergunta de emergência 4",
+                    "tema": "Geral",
+                    "respostas": [
+                        {"opcao": "A", "texto": "Opção A"},
+                        {"opcao": "B", "texto": "Opção B"},
+                        {"opcao": "C", "texto": "Opção C"},
+                        {"opcao": "D", "texto": "Opção D"}
+                    ],
+                    "resposta_correta": "D"
+                },
+                {
+                    "id": 5,
+                    "texto": "Pergunta de emergência 5",
+                    "tema": "Geral",
+                    "respostas": [
+                        {"opcao": "A", "texto": "Opção A"},
+                        {"opcao": "B", "texto": "Opção B"},
+                        {"opcao": "C", "texto": "Opção C"},
+                        {"opcao": "D", "texto": "Opção D"}
+                    ],
+                    "resposta_correta": "A"
+                },
+                {
+                    "id": 6,
+                    "texto": "Pergunta de emergência 6",
+                    "tema": "Geral",
+                    "respostas": [
+                        {"opcao": "A", "texto": "Opção A"},
+                        {"opcao": "B", "texto": "Opção B"},
+                        {"opcao": "C", "texto": "Opção C"},
+                        {"opcao": "D", "texto": "Opção D"}
+                    ],
+                    "resposta_correta": "B"
+                },
+                {
+                    "id": 7,
+                    "texto": "Pergunta de emergência 7",
+                    "tema": "Geral",
+                    "respostas": [
+                        {"opcao": "A", "texto": "Opção A"},
+                        {"opcao": "B", "texto": "Opção B"},
+                        {"opcao": "C", "texto": "Opção C"},
+                        {"opcao": "D", "texto": "Opção D"}
+                    ],
+                    "resposta_correta": "C"
+                },
+                {
+                    "id": 8,
+                    "texto": "Pergunta de emergência 8",
+                    "tema": "Geral",
+                    "respostas": [
+                        {"opcao": "A", "texto": "Opção A"},
+                        {"opcao": "B", "texto": "Opção B"},
+                        {"opcao": "C", "texto": "Opção C"},
+                        {"opcao": "D", "texto": "Opção D"}
+                    ],
+                    "resposta_correta": "D"
+                },
+                {
+                    "id": 9,
+                    "texto": "Pergunta de emergência 9",
+                    "tema": "Geral",
+                    "respostas": [
+                        {"opcao": "A", "texto": "Opção A"},
+                        {"opcao": "B", "texto": "Opção B"},
+                        {"opcao": "C", "texto": "Opção C"},
+                        {"opcao": "D", "texto": "Opção D"}
+                    ],
+                    "resposta_correta": "A"
+                },
+                {
+                    "id": 10,
+                    "texto": "Pergunta de emergência 10",
+                    "tema": "Geral",
+                    "respostas": [
+                        {"opcao": "A", "texto": "Opção A"},
+                        {"opcao": "B", "texto": "Opção B"},
+                        {"opcao": "C", "texto": "Opção C"},
+                        {"opcao": "D", "texto": "Opção D"}
+                    ],
+                    "resposta_correta": "B"
+                }
+            ]
+
 @app.route('/api/status', methods=['GET'])
 def status():
+    # Inicializa estruturas importantes caso não existam
+    if "historico" not in partida:
+        partida["historico"] = {
+            "total_partidas": 0,
+            "recorde_pontos": 0,
+            "recordista": None
+        }
+        
+    if "ultima_partida" not in partida:
+        partida["ultima_partida"] = {
+            "data": None,
+            "vencedor": None,
+            "pontuacao_maxima": 0
+        }
+    
     # Lista todos os jogadores cadastrados para seleção
     jogadores_disponiveis = sorted(
         jogadores_cadastrados["jogadores"],
@@ -371,20 +758,52 @@ def status():
         reverse=True
     )
     
-    return jsonify({
-        "status": partida["status"],
-        "rodada_atual": partida["rodada_atual"],
-        "total_rodadas": partida["total_rodadas"],
-        "timer_ativo": partida["timer_ativo"],
-        "tempo_restante": max(0, partida["duracao_rodada"] - (time.time() - partida["tempo_inicio"])) if partida["timer_ativo"] else 0,
-        "duracao_rodada": partida["duracao_rodada"],
-        "ultima_atualizacao": partida["ultima_atualizacao"],
-        "configuracao": partida["configuracao"],
-        "participantes": partida["participantes"],
-        "jogadores_disponiveis": jogadores_disponiveis,
-        "ultima_partida": partida["ultima_partida"],
-        "historico": partida["historico"]
-    })
+    # Faz uma cópia dos dados atuais da partida
+    status_atual = partida.copy()
+    
+    # Adiciona os jogadores disponíveis
+    status_atual["jogadores_disponiveis"] = jogadores_disponiveis
+    
+    # Remove campos internos que não devem ser expostos
+    if "perguntas_selecionadas" in status_atual:
+        del status_atual["perguntas_selecionadas"]
+        
+    # Remove o campo proxima_rodada para evitar confusão
+    if "proxima_rodada" in status_atual:
+        del status_atual["proxima_rodada"]
+    
+    # Converte o conjunto respostas_recebidas em uma lista se existir
+    if "respostas_recebidas" in status_atual and isinstance(status_atual["respostas_recebidas"], set):
+        status_atual["respostas_recebidas"] = list(status_atual["respostas_recebidas"])
+    
+    # Calcula o tempo restante, se aplicável
+    tempo_restante = 0
+    if partida["timer_ativo"]:
+        tempo_decorrido = time.time() - partida["tempo_inicio"]
+        tempo_restante = max(0, partida["duracao_rodada"] - tempo_decorrido)
+    
+    # Complementa o status com informações adicionais
+    status_atual["tempo_restante"] = tempo_restante
+    status_atual["timer_ativo"] = partida["timer_ativo"]
+    status_atual["ultima_atualizacao"] = time.time()
+    
+    # Adiciona texto_rodada_atual para compatibilidade com o front-end
+    if partida["status"] == "rodada_ativa" or partida["status"] == "iniciada":
+        rodada_atual = partida["rodada_atual"]
+        total_rodadas = partida["total_rodadas"]
+        
+        # Se a rodada for 0 (partida iniciada mas sem nenhuma rodada ativa), exibir como 1
+        if rodada_atual == 0:
+            texto_rodada_atual = "1"
+        # Se for a última rodada, exibir como "FINAL"
+        elif rodada_atual == total_rodadas:
+            texto_rodada_atual = "FINAL"
+        else:
+            texto_rodada_atual = str(rodada_atual)
+        
+        status_atual["texto_rodada_atual"] = texto_rodada_atual
+    
+    return jsonify(status_atual)
 
 @app.route('/api/iniciar', methods=['POST'])
 def iniciar_jogo():
@@ -427,7 +846,10 @@ def proxima_rodada():
         partida["tempo_inicio"] = 0
         partida["duracao_rodada"] = 30.0  # Reset para o valor padrão
         
-        if partida["rodada_atual"] > partida["total_rodadas"]:
+        # Obtém o total de rodadas da configuração
+        total_rodadas = partida["configuracao"].get("total_rodadas", 10)
+        
+        if partida["rodada_atual"] > total_rodadas:
             partida["status"] = "finalizada"
             return jsonify({"mensagem": "Jogo finalizado", "status": partida["status"]})
         
@@ -443,31 +865,40 @@ def proxima_rodada():
 
 @app.route('/api/pergunta_atual', methods=['GET'])
 def pergunta_atual():
+    # Obtém o total de rodadas da configuração
+    total_rodadas = partida["configuracao"].get("total_rodadas", 10)
+    
     # Melhorar a resposta informativa
     resposta = {
         "status": partida["status"],
         "rodada_atual": partida["rodada_atual"],
-        "total_rodadas": partida["total_rodadas"]
+        "total_rodadas": total_rodadas
     }
+    
+    # Determina se a rodada atual é a última
+    rodada_atual_e_ultima = partida["rodada_atual"] == total_rodadas
+    
+    # Formata o texto da rodada atual
+    texto_rodada_atual = "FINAL" if rodada_atual_e_ultima else str(partida["rodada_atual"])
+    resposta["texto_rodada_atual"] = texto_rodada_atual
     
     if partida["status"] != "rodada_ativa":
         resposta["erro"] = "Não há rodada ativa"
         resposta["mensagem"] = "É necessário iniciar o jogo e avançar para uma rodada antes de solicitar a pergunta"
         return jsonify(resposta)
     
-    indice = partida["rodada_atual"] - 1
-    if indice < 0 or indice >= len(perguntas):
-        resposta["erro"] = "Índice de pergunta inválido"
-        resposta["mensagem"] = f"Rodada {partida['rodada_atual']} não possui pergunta disponível"
+    # Obtém os dados da rodada atual
+    dados_rodada = partida.get("rodada_dados", {})
+    if not dados_rodada:
+        resposta["erro"] = "Dados da rodada não encontrados"
+        resposta["mensagem"] = "Não foi possível obter os dados da pergunta atual"
         return jsonify(resposta)
     
-    # Retorna pergunta sem a resposta correta
-    pergunta = perguntas[indice].copy()
+    # Retorna a pergunta da rodada atual
     pergunta_segura = {
-        "id": pergunta["id"],
-        "texto": pergunta["texto"],
-        "tema": pergunta["tema"],
-        "respostas": pergunta["respostas"]
+        "texto": dados_rodada.get("pergunta", ""),
+        "tema": dados_rodada.get("tema", "Geral"),
+        "respostas": dados_rodada.get("opcoes", [])
     }
     
     # Adicionar os dados da pergunta à resposta
@@ -476,80 +907,217 @@ def pergunta_atual():
     # Adicionar informações extras para depuração
     resposta["debug"] = {
         "perguntas_disponiveis": len(perguntas),
-        "indice_atual": indice
+        "indice_atual": partida["rodada_atual"] - 1
     }
     
     return jsonify(resposta)
 
 @app.route('/api/enviar_resposta', methods=['POST'])
 def enviar_resposta():
-    # Corrigido para aceitar tanto dados JSON como form data
-    if request.is_json:
-        data = request.json
-    else:
-        data = request.form.to_dict()
-    
-    # Logging para debug
-    print("Dados recebidos:", data)
-    
-    # Verifica se os dados necessários existem
-    if not data:
-        return jsonify({"erro": "Nenhum dado recebido"}), 400
-    
-    # Corrigido para aceitar tanto 'resposta' quanto 'opcao'
-    jogador_id = int(data.get('jogador_id', 0))
-    resposta = data.get('resposta') or data.get('opcao')
-    tempo = float(data.get('tempo', 0))  # Convertido para float
-    
-    # Validação dos dados
-    if not jogador_id or not resposta:
-        return jsonify({
-            "erro": "Dados incompletos",
-            "recebido": data
-        }), 400
-    
-    if partida["status"] != "rodada_ativa":
-        return jsonify({"erro": "Não há rodada ativa"}), 400
-    
-    indice = partida["rodada_atual"] - 1
-    if indice < 0 or indice >= len(perguntas):
-        return jsonify({"erro": "Índice de pergunta inválido"}), 400
+    try:
+        # Obtém os dados da requisição
+        if request.is_json:
+            dados = request.json
+        else:
+            dados = request.form.to_dict()
         
-    pergunta = perguntas[indice]
-    
-    # Localizar jogador
-    jogador = None
-    for p in partida["participantes"]:
-        if p["id"] == jogador_id:
-            jogador = p
-            break
-    
-    if not jogador:
-        return jsonify({"erro": "Jogador não encontrado"}), 404
-    
-    # Verificar resposta
-    eh_correta = resposta == pergunta["resposta_correta"]
-    
-    # Atualizar pontuação (resposta correta: 10 pontos base)
-    pontos = 0
-    if eh_correta:
-        pontos = 10
-        # Bônus por velocidade (máximo 5 pontos extras)
-        if tempo < 1000:  # menos de 1 segundo
-            pontos += 5
-        elif tempo < 3000:  # menos de 3 segundos
-            pontos += 3
-        elif tempo < 5000:  # menos de 5 segundos
-            pontos += 1
+        # Log para debug
+        app.logger.info(f"Dados de resposta recebidos: {dados}")
+        
+        # Verifica se o jogo está em uma rodada ativa
+        if partida["status"] != "rodada_ativa":
+            return jsonify({
+                "erro": "Não há uma rodada ativa para receber respostas",
+                "status_atual": partida["status"]
+            }), 400
+        
+        # Obtém a posição do jogador (1, 2, 3) em vez do ID
+        posicao = dados.get("jogador") or dados.get("posicao")
+        if not posicao:
+            return jsonify({
+                "erro": "É necessário informar a posição do jogador (1, 2 ou 3)",
+                "dados_recebidos": dados
+            }), 400
+        
+        # Converte para inteiro
+        try:
+            posicao = int(posicao)
+        except ValueError:
+            return jsonify({
+                "erro": f"Posição de jogador inválida: {posicao}",
+                "status": "erro"
+            }), 400
+        
+        # Verifica se a posição é válida
+        if posicao < 1 or posicao > len(partida["participantes"]):
+            return jsonify({
+                "erro": f"Posição {posicao} inválida. Total de jogadores: {len(partida['participantes'])}",
+                "status": "erro"
+            }), 400
+        
+        # Obtém o jogador correspondente à posição (0-indexed na lista)
+        jogador = partida["participantes"][posicao - 1]
+        jogador_id = str(jogador["id"])
+        
+        # Verifica se o jogador já enviou uma resposta nesta rodada
+        if jogador_id in partida.get("respostas_recebidas", set()):
+            return jsonify({
+                "erro": "Este jogador já enviou uma resposta para esta rodada",
+                "jogador_id": jogador_id,
+                "jogador_nome": jogador["nome"],
+                "jogador_posicao": posicao
+            }), 400
+        
+        # Registra que o jogador enviou uma resposta
+        if "respostas_recebidas" not in partida:
+            partida["respostas_recebidas"] = set()
+        partida["respostas_recebidas"].add(jogador_id)
+        
+        # Obtém a resposta escolhida - aceita 'resposta', 'opcao' ou 'opcao_id'
+        resposta = dados.get("resposta")
+        if resposta is None:
+            resposta = dados.get("opcao")
+        if resposta is None:
+            resposta = dados.get("opcao_id")
+        
+        if resposta is None:
+            return jsonify({
+                "erro": "É necessário informar a resposta escolhida",
+                "dados_recebidos": dados
+            }), 400
+        
+        # Mapeia respostas alfabéticas para numéricas (A=1, B=2, etc.)
+        if isinstance(resposta, str) and resposta.upper() in ["A", "B", "C", "D"]:
+            mapeamento = {"A": 1, "B": 2, "C": 3, "D": 4}
+            resposta = mapeamento[resposta.upper()]
+        
+        # Converte para inteiro
+        try:
+            resposta = int(resposta)
+        except ValueError:
+            return jsonify({
+                "erro": f"Resposta inválida: {resposta}",
+                "status": "erro"
+            }), 400
+        
+        # Obtém o tempo de resposta (opcional)
+        tempo = 0.0
+        try:
+            tempo = float(dados.get("tempo", 0.0))
+        except ValueError:
+            tempo = 0.0
+        
+        # Tempo real do servidor
+        tempo_atual = time.time()
+        
+        # Verifica se o jogador respondeu antes do timer começar
+        if tempo_atual < partida["tempo_inicio"]:
+            # Penaliza o jogador por responder antes do tempo
+            app.logger.warning(f"Jogador {jogador_id} ({jogador['nome']}) respondeu antes do timer iniciar!")
             
+            # Marca que o jogador foi penalizado nesta rodada
+            if "antecipacoes" not in partida:
+                partida["antecipacoes"] = {}
+            partida["antecipacoes"][jogador_id] = True
+            
+            # Adiciona na lista de respostas mas com pontuação zero
+            if "respostas" not in partida:
+                partida["respostas"] = {}
+            
+            partida["respostas"][jogador_id] = {
+                "resposta": resposta,
+                "tempo": 0,
+                "correta": False,  # Considerada incorreta independente da escolha
+                "pontos": 0,
+                "antecipou": True
+            }
+            
+            return jsonify({
+                "jogador_id": jogador_id,
+                "jogador_nome": jogador["nome"],
+                "jogador_posicao": posicao,
+                "resposta": resposta,
+                "correta": False,
+                "pontos_obtidos": 0,
+                "pontuacao_total": jogador["pontuacao"],
+                "mensagem": "Resposta antecipada! Você respondeu antes do timer começar."
+            })
+        
+        # Busca a resposta correta para a rodada atual
+        dados_rodada = partida.get("rodada_dados", {})
+        resposta_correta = dados_rodada.get("resposta_correta", 1)
+        
+        # Verifica se a resposta está correta
+        correta = (resposta == resposta_correta)
+        
+        # Calcula os pontos com base na resposta e tempo
+        pontos = 0
+        tempo_max = partida["duracao_rodada"]
+        
+        if correta:
+            # Pontuação base por acerto
+            pontos_base = 10
+            
+            # Bônus por tempo (quanto mais rápido, mais pontos)
+            if tempo > 0 and tempo_max > 0:
+                fator_tempo = max(0, 1 - (tempo / (tempo_max * 1000)))
+                bonus_tempo = int(10 * fator_tempo)
+                pontos = pontos_base + bonus_tempo
+            else:
+                pontos = pontos_base
+        
+        # Armazena a resposta do jogador
+        if "respostas" not in partida:
+            partida["respostas"] = {}
+        
+        partida["respostas"][jogador_id] = {
+            "resposta": resposta,
+            "tempo": tempo,
+            "correta": correta,
+            "pontos": pontos,
+            "antecipou": False
+        }
+        
+        # Atualiza dados do jogador na sessão atual
         jogador["pontuacao"] += pontos
+        
+        # Verifica se todos os jogadores já responderam
+        todos_responderam = len(partida.get("respostas_recebidas", set())) >= len(partida["participantes"])
+        
+        if todos_responderam:
+            app.logger.info("Todos os jogadores responderam! Preparando para avançar para a próxima rodada.")
+            
+            # Agenda a finalização automática da rodada
+            # Isto será implementado em um thread separado em uma implementação real
+            # Por ora, apenas definimos uma flag
+            partida["avancar_rodada"] = True
+        
+        # Retorna o resultado
+        resultado = {
+            "jogador_id": jogador_id,
+            "jogador_nome": jogador["nome"],
+            "jogador_posicao": posicao,
+            "resposta": resposta,
+            "correta": correta,
+            "pontos_obtidos": pontos,
+            "pontuacao_total": jogador["pontuacao"],
+            "todos_responderam": todos_responderam
+        }
+        
+        if todos_responderam:
+            resultado["avancar_para"] = "próxima rodada"
+        
+        return jsonify(resultado)
     
-    return jsonify({
-        "correta": eh_correta,
-        "pontos_obtidos": pontos if eh_correta else 0,
-        "pontuacao_total": jogador["pontuacao"],
-        "jogador": jogador["nome"]
-    })
+    except Exception as e:
+        app.logger.error(f"Erro ao processar resposta: {e}")
+        import traceback
+        app.logger.error(traceback.format_exc())
+        return jsonify({
+            "erro": "Erro ao processar resposta",
+            "detalhes": str(e),
+            "status": "erro"
+        }), 500
 
 @app.route('/api/resultados', methods=['GET'])
 def resultados():
@@ -602,6 +1170,19 @@ def modo_apresentacao():
     partida["rodada_atual"] = 0
     partida["timer_ativo"] = False
     
+    # Zera explicitamente o valor de próxima rodada e remove texto_proxima_rodada
+    partida["proxima_rodada"] = 0
+    if "texto_proxima_rodada" in partida:
+        del partida["texto_proxima_rodada"]
+    
+    # Inicializa o histórico se não existir
+    if "historico" not in partida:
+        partida["historico"] = {
+            "total_partidas": 0,
+            "recorde_pontos": 0,
+            "recordista": None
+        }
+    
     # Opcionalmente recebe mensagem personalizada
     mensagem = dados.get("mensagem", "Quiz Game - Aguardando início da partida")
     tema = dados.get("tema", "default")
@@ -612,6 +1193,14 @@ def modo_apresentacao():
         key=lambda x: x["pontuacao_total"],
         reverse=True
     )
+    
+    # Certifica-se que a última partida existe
+    if "ultima_partida" not in partida:
+        partida["ultima_partida"] = {
+            "data": None,
+            "vencedor": None,
+            "pontuacao_maxima": 0
+        }
     
     # Retorna a estrutura exata necessária
     return jsonify({
@@ -682,7 +1271,7 @@ def status_apresentacao():
 @app.route('/api/temas', methods=['GET'])
 def listar_temas():
     # Extrai os temas únicos das perguntas
-    temas = set(p["tema"] for p in perguntas)
+    temas = set(p["tema"] for p in todas_perguntas)
     
     return jsonify({
         "temas": list(temas)
@@ -928,44 +1517,94 @@ def configurar_partida():
         }), 400
     
     # Obtém os dados da configuração
-    dados = request.json if request.is_json else {}
+    dados = request.json if request.is_json else request.form.to_dict()
+    
+    # Verificar se estamos recebendo parâmetros individuais para jogadores ou o array
+    jogador1 = dados.get("jogador1")
+    jogador2 = dados.get("jogador2")
+    jogador3 = dados.get("jogador3")
+    
+    # Se tiver parâmetros individuais, converte para array
+    if jogador1 is not None and jogador2 is not None and jogador3 is not None:
+        jogadores_selecionados = [int(jogador1), int(jogador2), int(jogador3)]
+    else:
+        # Tenta obter o array de jogadores
+        jogadores = dados.get("jogadores")
+        
+        # Se jogadores for uma string no formato "[1,2,4]", converte para lista
+        if isinstance(jogadores, str):
+            try:
+                # Tenta converter de string JSON para lista
+                if jogadores.startswith('[') and jogadores.endswith(']'):
+                    import json
+                    jogadores_selecionados = json.loads(jogadores)
+                # Alternativamente, tenta separar por vírgulas
+                else:
+                    jogadores_selecionados = [int(j.strip()) for j in jogadores.split(',') if j.strip().isdigit()]
+            except Exception as e:
+                app.logger.error(f"Erro ao processar jogadores: {e}")
+                jogadores_selecionados = []
+        else:
+            jogadores_selecionados = jogadores if isinstance(jogadores, list) else []
+    
+    # Duração da rodada (segundos)
+    try:
+        duracao_rodada = float(dados.get("duracao_rodada", 30.0))
+    except (ValueError, TypeError):
+        duracao_rodada = 30.0
+    
+    # Total de rodadas
+    try:
+        total_rodadas = int(dados.get("total_rodadas", 10))
+    except (ValueError, TypeError):
+        total_rodadas = 10
+    
+    # Tema visual
+    tema = dados.get("tema", "default")
+    
+    # Log para debug
+    app.logger.info(f"Dados recebidos: {dados}")
+    app.logger.info(f"Jogadores selecionados: {jogadores_selecionados}")
     
     # Validação dos jogadores selecionados
-    jogadores_selecionados = dados.get("jogadores", [])
     if len(jogadores_selecionados) != 3:
         return jsonify({
             "erro": "É necessário selecionar exatamente 3 jogadores",
+            "status": "erro",
+            "recebido": jogadores_selecionados
+        }), 400
+    
+    # Validação dos jogadores existentes
+    for jogador_id in jogadores_selecionados:
+        if not any(j["id"] == jogador_id for j in jogadores_cadastrados["jogadores"]):
+            return jsonify({
+                "erro": f"Jogador com ID {jogador_id} não encontrado",
+                "status": "erro"
+            }), 400
+    
+    # Validação dos parâmetros da partida
+    if duracao_rodada <= 0:
+        return jsonify({
+            "erro": "A duração da rodada deve ser um valor positivo",
             "status": "erro"
         }), 400
     
-    # Validação da duração da rodada
-    duracao = float(dados.get("duracao_rodada", 30.0))
-    if duracao < 10 or duracao > 60:
+    if total_rodadas <= 0:
         return jsonify({
-            "erro": "A duração da rodada deve estar entre 10 e 60 segundos",
-            "status": "erro"
-        }), 400
-    
-    # Validação do número de rodadas
-    total_rodadas = int(dados.get("total_rodadas", 10))
-    if total_rodadas < 5 or total_rodadas > 20:
-        return jsonify({
-            "erro": "O número de rodadas deve estar entre 5 e 20",
+            "erro": "O total de rodadas deve ser um valor positivo",
             "status": "erro"
         }), 400
     
     # Atualiza a configuração
-    partida["configuracao"].update({
-        "jogadores_selecionados": jogadores_selecionados,
-        "duracao_rodada": duracao,
-        "total_rodadas": total_rodadas,
-        "tema": dados.get("tema", "default"),
-        "status": "validada"
-    })
+    partida["configuracao"]["jogadores_selecionados"] = jogadores_selecionados
+    partida["configuracao"]["duracao_rodada"] = duracao_rodada
+    partida["configuracao"]["total_rodadas"] = total_rodadas
+    partida["configuracao"]["tema"] = tema
+    partida["configuracao"]["status"] = "validada"
     
-    # Atualiza os parâmetros globais da partida
+    # Atualiza os parâmetros gerais da partida
+    partida["duracao_rodada"] = duracao_rodada
     partida["total_rodadas"] = total_rodadas
-    partida["duracao_rodada"] = duracao
     
     return jsonify({
         "mensagem": "Configuração da partida atualizada com sucesso",
@@ -1002,52 +1641,60 @@ def status_selecao():
 # Endpoint para iniciar a partida
 @app.route('/api/iniciar_partida', methods=['POST'])
 def iniciar_partida():
-    # Verifica se o jogo está em modo aguardando
-    if partida["status"] != "aguardando":
+    # Verifica se o jogo está em modo seleção ou aguardando
+    if partida["status"] not in ["selecao", "aguardando"]:
         return jsonify({
             "erro": "Não é possível iniciar a partida neste momento",
-            "status_atual": partida["status"]
+            "status": partida["status"]
         }), 400
     
-    # Verifica se a configuração está validada
-    if partida["configuracao"]["status"] != "validada":
+    # Verifica se há jogadores selecionados
+    if not partida["configuracao"]["jogadores_selecionados"]:
         return jsonify({
-            "erro": "A configuração da partida não está validada",
+            "erro": "Selecione pelo menos um jogador para iniciar a partida",
             "status": "erro"
         }), 400
     
-    # Obtém os jogadores selecionados
-    jogadores_selecionados = partida["configuracao"]["jogadores_selecionados"]
+    # Limpa lista de participantes anterior e configura novos participantes
+    partida["participantes"] = []
     
-    # Inicializa os participantes com os jogadores selecionados
-    partida["participantes"] = [
-        {
-            "id": id,
-            "nome": next((j["nome"] for j in jogadores_cadastrados["jogadores"] if j["id"] == id), "Jogador Desconhecido"),
-            "foto": next((j["foto"] for j in jogadores_cadastrados["jogadores"] if j["id"] == id), "https://randomuser.me/api/portraits/lego/0.jpg"),
-            "pontuacao": 0,
-            "pontuacao_total": next((j["pontuacao_total"] for j in jogadores_cadastrados["jogadores"] if j["id"] == id), 0),
-            "partidas_jogadas": next((j["partidas_jogadas"] for j in jogadores_cadastrados["jogadores"] if j["id"] == id), 0),
-            "vitorias": next((j["vitorias"] for j in jogadores_cadastrados["jogadores"] if j["id"] == id), 0)
-        }
-        for id in jogadores_selecionados
-    ]
+    # Configura os participantes de acordo com jogadores selecionados
+    for jogador_id in partida["configuracao"]["jogadores_selecionados"]:
+        # Encontra os detalhes do jogador pelo ID
+        jogador = None
+        for j in jogadores_cadastrados["jogadores"]:
+            if j["id"] == jogador_id:
+                jogador = j
+                break
+        
+        if jogador:
+            # Cria uma cópia do jogador para não modificar o original
+            participante = jogador.copy()
+            # Adiciona a pontuação zerada para a partida
+            participante["pontuacao"] = 0
+            # Adiciona à lista de participantes
+            partida["participantes"].append(participante)
     
-    # Inicializa a partida
+    # Verifica se os participantes foram configurados corretamente
+    if not partida["participantes"]:
+        return jsonify({"erro": "Falha ao configurar participantes"}), 500
+    
+    # Atualiza o status da partida
     partida["status"] = "iniciada"
-    partida["rodada_atual"] = 0
-    partida["timer_ativo"] = False
-    partida["tempo_inicio"] = 0
+    partida["rodada_atual"] = 0  # Rodada inicial zerada
+    partida["proxima_rodada"] = 0  # Também zera proxima_rodada
     partida["ultima_atualizacao"] = time.time()
-    partida["configuracao"]["status"] = "iniciada"
     
-    # Atualiza o histórico dos jogadores
-    for jogador in partida["participantes"]:
-        jogador["partidas_jogadas"] += 1
+    # Texto da rodada atual deve ser sempre "1" ao iniciar uma partida
+    texto_rodada_atual = "1"
     
+    # Retorna o status atualizado
     return jsonify({
         "mensagem": "Partida iniciada com sucesso",
-        "status": "iniciada",
+        "status": partida["status"],
+        "rodada_atual": partida["rodada_atual"],
+        "texto_rodada_atual": texto_rodada_atual,
+        "total_rodadas": partida["total_rodadas"],
         "participantes": partida["participantes"]
     })
 
@@ -1055,11 +1702,63 @@ def iniciar_partida():
 @app.route('/api/reset', methods=['POST'])
 def reset():
     # Reseta a partida para o estado inicial
+    global partida
+    global configuracao_padrao
+    
+    partida = {
+        "status": "apresentacao",
+        "configuracao": {
+            "status": "pendente",
+            "duracao_rodada": 30,
+            "total_rodadas": 10,
+            "jogadores_selecionados": []
+        },
+        "participantes": [],
+        "rodada_atual": 0,
+        "proxima_rodada": 0,  # Zera a próxima rodada explicitamente
+        "timer_ativo": False,
+        "ultima_atualizacao": time.time()
+    }
+    
+    # Reseta a lista de perguntas aleatórias selecionadas
+    selecionar_perguntas_aleatorias()
+    
+    # Retorna o novo estado
+    return jsonify({
+        "mensagem": "Partida resetada com sucesso",
+        "status": "apresentacao"
+    })
+
+@app.route('/api/nova_partida', methods=['POST'])
+def nova_partida():
+    # Reseta a partida para o estado inicial
+    global partida
+    global perguntas
+    
+    # Log para registro
+    app.logger.info("Criando nova partida")
+    
+    # Inicializa a configuração básica
     partida["status"] = "apresentacao"
     partida["rodada_atual"] = 0
+    partida["proxima_rodada"] = 0  # Explicitamente zerado
+    if "texto_proxima_rodada" in partida:
+        del partida["texto_proxima_rodada"]  # Remove caso exista
     partida["timer_ativo"] = False
     partida["tempo_inicio"] = 0
     partida["ultima_atualizacao"] = time.time()
+    
+    # Limpa dados específicos de rodadas
+    if "respostas" in partida:
+        del partida["respostas"]
+    if "respostas_recebidas" in partida:
+        del partida["respostas_recebidas"]
+    if "avancar_rodada" in partida:
+        del partida["avancar_rodada"]
+    if "antecipacoes" in partida:
+        del partida["antecipacoes"]
+    
+    # Reseta a configuração
     partida["configuracao"] = {
         "jogadores_selecionados": [],
         "duracao_rodada": 30.0,
@@ -1067,120 +1766,254 @@ def reset():
         "tema": "default",
         "status": "pendente"
     }
-    partida["participantes"] = []
     
+    # Atualiza o total de rodadas no objeto da partida
+    partida["total_rodadas"] = partida["configuracao"]["total_rodadas"]
+    partida["duracao_rodada"] = partida["configuracao"]["duracao_rodada"]
+    
+    # Seleciona perguntas aleatórias
+    try:
+        perguntas = selecionar_perguntas_aleatorias()
+        app.logger.info(f"Selecionadas {len(perguntas)} perguntas aleatórias para a partida")
+    except Exception as e:
+        app.logger.error(f"Erro ao selecionar perguntas: {str(e)}")
+    
+    # Retorna o estado atual do jogo com jogadores disponíveis
     return jsonify({
-        "mensagem": "Jogo resetado com sucesso",
-        "status": "apresentacao"
+        "status": partida["status"],
+        "mensagem": "Nova partida criada",
+        "jogadores_disponíveis": jogadores_cadastrados["jogadores"]
     })
 
 # Endpoint para iniciar uma nova rodada
 @app.route('/api/iniciar_rodada', methods=['POST'])
 def iniciar_rodada():
-    # Verifica se o jogo está iniciado
-    if partida["status"] != "iniciada":
+    # Permite acesso às variáveis globais
+    global perguntas
+    
+    # Verifica se o jogo está iniciado ou em modo abertura
+    if partida["status"] not in ["iniciada", "abertura"]:
         return jsonify({
             "erro": "Não é possível iniciar uma rodada neste momento",
-            "status_atual": partida["status"]
+            "status": partida["status"]
         }), 400
     
-    # Verifica se já não está em uma rodada
-    if partida["status"] == "rodada_ativa":
-        return jsonify({
-            "erro": "Já existe uma rodada em andamento",
-            "status": "erro"
-        }), 400
+    # Incrementa o contador de rodada se estamos em abertura
+    if partida["status"] == "abertura":
+        partida["rodada_atual"] = partida["proxima_rodada"]
     
-    # Verifica se ainda há rodadas disponíveis
-    if partida["rodada_atual"] >= partida["total_rodadas"]:
-        return jsonify({
-            "erro": "Todas as rodadas já foram jogadas",
-            "status": "erro"
-        }), 400
-    
-    # Inicia a rodada
+    # Atualiza o status da partida
     partida["status"] = "rodada_ativa"
-    partida["rodada_atual"] += 1
-    partida["timer_ativo"] = True
+    
+    # Prepara estrutura para respostas
+    partida["respostas"] = {}
+    
+    # Registra as respostas recebidas por jogador
+    partida["respostas_recebidas"] = set()
+    
+    # Obtém a pergunta da rodada atual a partir da lista de perguntas selecionadas
+    indice_pergunta = partida["rodada_atual"] - 1
+    
+    # Verifica se perguntas existe e não é None
+    if perguntas is None:
+        app.logger.error("Lista de perguntas é None. Tentando selecionar novamente.")
+        try:
+            # Tenta selecionar perguntas novamente
+            perguntas = selecionar_perguntas_aleatorias()
+            app.logger.info(f"Re-selecionadas {len(perguntas)} perguntas para a partida")
+        except Exception as e:
+            app.logger.error(f"Erro ao re-selecionar perguntas: {str(e)}")
+            return jsonify({
+                "erro": "Falha ao carregar perguntas para o quiz",
+                "status": partida["status"]
+            }), 500
+    
+    # Verifica se temos perguntas suficientes
+    if not perguntas or 0 > indice_pergunta or indice_pergunta >= len(perguntas):
+        return jsonify({
+            "erro": f"Índice de pergunta inválido: {indice_pergunta}. Total de perguntas: {len(perguntas) if perguntas else 0}",
+            "status": partida["status"]
+        }), 400
+    
+    pergunta_atual = perguntas[indice_pergunta]
+    # Converte a resposta correta se estiver em formato alfabético (A, B, C)
+    resposta_correta = pergunta_atual["resposta_correta"]
+    if isinstance(resposta_correta, str) and resposta_correta.upper() in ["A", "B", "C", "D"]:
+        mapeamento = {"A": 1, "B": 2, "C": 3, "D": 4}
+        resposta_correta_num = mapeamento.get(resposta_correta.upper(), 0)
+    else:
+        resposta_correta_num = resposta_correta
+    
+    # Guarda a resposta correta para futura validação
+    partida["resposta_correta"] = resposta_correta_num
+    
+    # Atualiza o momento de início da rodada
     partida["tempo_inicio"] = time.time()
     partida["ultima_atualizacao"] = time.time()
     
+    # Ativa o timer
+    partida["timer_ativo"] = True
+    
+    # Prepara respostas para formatação na interface
+    opcoes = []
+    for opcao in pergunta_atual["respostas"]:
+        opcoes.append({
+            "id": mapeamento.get(opcao["opcao"].upper(), 0),
+            "texto": opcao["texto"]
+        })
+    
+    # Formata texto da rodada atual como número ou "FINAL"
+    if partida["rodada_atual"] == partida["total_rodadas"]:
+        texto_rodada_atual = "FINAL"
+    else:
+        texto_rodada_atual = str(partida["rodada_atual"])
+    
+    # Log
+    app.logger.info(f"Iniciando rodada {texto_rodada_atual}")
+    
+    # Retorna os dados da pergunta
     return jsonify({
-        "mensagem": f"Rodada {partida['rodada_atual']} iniciada",
         "rodada_atual": partida["rodada_atual"],
-        "total_rodadas": partida["total_rodadas"],
-        "duracao_rodada": partida["duracao_rodada"]
+        "texto_rodada_atual": texto_rodada_atual,
+        "tema": pergunta_atual.get("tema", "Geral"),
+        "pergunta": pergunta_atual["texto"],
+        "alternativas": opcoes,
+        "duracao_rodada": partida["duracao_rodada"],
+        "total_rodadas": partida["total_rodadas"]
     })
 
 # Endpoint para finalizar a rodada atual
 @app.route('/api/finalizar_rodada', methods=['POST'])
 def finalizar_rodada():
+    # Obtém o total de rodadas da configuração
+    total_rodadas = partida["configuracao"].get("total_rodadas", 10)
+    
     # Verifica se o jogo está em uma rodada ativa
     if partida["status"] != "rodada_ativa":
+        # Determina se a rodada atual é a última
+        rodada_atual_e_ultima = partida["rodada_atual"] == total_rodadas
+        
+        # Formata o texto da rodada atual
+        texto_rodada_atual = "FINAL" if rodada_atual_e_ultima else (
+            "1" if partida["rodada_atual"] == 0 else str(partida["rodada_atual"])
+        )
+        
         return jsonify({
             "erro": "Não há uma rodada ativa para finalizar",
-            "status_atual": partida["status"]
+            "status_atual": partida["status"],
+            "rodada_atual": partida["rodada_atual"],
+            "texto_rodada_atual": texto_rodada_atual
         }), 400
     
-    # Obtém os dados da rodada
-    dados = request.json if request.is_json else {}
-    
-    # Validação dos pontos
-    pontos = dados.get("pontos", {})
-    if not pontos or len(pontos) != len(partida["participantes"]):
-        return jsonify({
-            "erro": "É necessário fornecer pontos para todos os participantes",
-            "status": "erro"
-        }), 400
-    
-    # Atualiza a pontuação dos participantes
-    for jogador in partida["participantes"]:
-        jogador["pontuacao"] += pontos.get(str(jogador["id"]), 0)
-        jogador["pontuacao_total"] += pontos.get(str(jogador["id"]), 0)
-    
-    # Finaliza a rodada
-    partida["status"] = "iniciada"
-    partida["timer_ativo"] = False
-    partida["ultima_atualizacao"] = time.time()
-    
-    # Verifica se é a última rodada
-    if partida["rodada_atual"] >= partida["total_rodadas"]:
-        # Determina o vencedor
-        vencedor = max(partida["participantes"], key=lambda x: x["pontuacao"])
-        vencedor["vitorias"] += 1
+    try:
+        # Log para debug
+        app.logger.info("Finalizando rodada usando dados de respostas do servidor")
         
-        # Atualiza o histórico
-        partida["ultima_partida"] = {
-            "data": time.time(),
-            "vencedor": {
-                "id": vencedor["id"],
-                "nome": vencedor["nome"],
-                "foto": vencedor["foto"],
-                "pontuacao": vencedor["pontuacao"]
-            },
-            "pontuacao_maxima": vencedor["pontuacao"]
-        }
+        # Monta o objeto de pontos a partir das respostas já registradas no servidor
+        pontos = {}
+        for jogador_id, resposta_info in partida.get("respostas", {}).items():
+            pontos[jogador_id] = resposta_info["pontos"]
         
-        # Atualiza o recorde
-        if vencedor["pontuacao"] > partida["historico"]["recorde_pontos"]:
-            partida["historico"]["recorde_pontos"] = vencedor["pontuacao"]
-            partida["historico"]["recordista"] = {
-                "id": vencedor["id"],
-                "nome": vencedor["nome"],
-                "foto": vencedor["foto"]
+        # Para jogadores que não responderam, atribui 0 pontos
+        for jogador in partida["participantes"]:
+            jogador_id = str(jogador["id"])
+            if jogador_id not in pontos:
+                pontos[jogador_id] = 0
+        
+        app.logger.info(f"Pontos calculados a partir das respostas: {pontos}")
+        
+        # Atualiza a pontuação dos participantes
+        for jogador in partida["participantes"]:
+            jogador_id = str(jogador["id"])
+            if jogador_id in pontos:
+                jogador["pontuacao"] += pontos[jogador_id]
+                jogador["pontuacao_total"] += pontos[jogador_id]
+        
+        # Salva o número da rodada atual antes de continuar
+        rodada_atual_finalizada = partida["rodada_atual"]
+        
+        # Verifica se é a última rodada
+        if partida["rodada_atual"] >= total_rodadas:
+            # Determina o vencedor
+            vencedor = max(partida["participantes"], key=lambda x: x["pontuacao"])
+            vencedor["vitorias"] += 1
+            
+            # Atualiza o histórico
+            partida["ultima_partida"] = {
+                "data": time.time(),
+                "vencedor": {
+                    "id": vencedor["id"],
+                    "nome": vencedor["nome"],
+                    "foto": vencedor["foto"],
+                    "pontuacao": vencedor["pontuacao"]
+                },
+                "pontuacao_maxima": vencedor["pontuacao"]
             }
+            
+            # Finaliza a partida
+            partida["status"] = "finalizada"
+            
+            return jsonify({
+                "mensagem": f"Rodada {rodada_atual_finalizada} finalizada",
+                "status": "finalizada",
+                "participantes": partida["participantes"],
+                "ultima_partida": partida["ultima_partida"],
+                "pontuacoes": pontos,
+                "rodada_atual": partida["rodada_atual"],
+                "texto_rodada_atual": "FINAL"
+            })
         
-        partida["historico"]["total_partidas"] += 1
+        # NOVO CÓDIGO: Incrementa automaticamente a rodada
+        partida["rodada_atual"] += 1
         
-        # Finaliza a partida
-        partida["status"] = "finalizada"
-    
-    return jsonify({
-        "mensagem": f"Rodada {partida['rodada_atual']} finalizada",
-        "status": partida["status"],
-        "participantes": partida["participantes"],
-        "ultima_partida": partida["ultima_partida"] if partida["status"] == "finalizada" else None
-    })
+        # Determina se a próxima rodada é a última
+        rodada_atual_e_ultima = partida["rodada_atual"] == total_rodadas
+        
+        # Formata o texto da rodada atual (agora já incrementada)
+        texto_rodada_atual = "FINAL" if rodada_atual_e_ultima else str(partida["rodada_atual"])
+        
+        # NOVO CÓDIGO: Atualiza as informações de abertura da rodada (mesmo que o endpoint /api/abertura_rodada faz)
+        partida["proxima_rodada"] = partida["rodada_atual"]
+        partida["status"] = "abertura"
+        partida["tempo_abertura"] = 15  # Tempo de abertura em segundos
+        partida["tempo_inicio"] = time.time()
+        partida["ultima_atualizacao"] = time.time()
+        
+        # Limpa as respostas da rodada anterior
+        if "respostas" in partida:
+            partida["respostas"] = {}
+        
+        # Limpa a contagem de antecipações
+        partida["antecipacoes"] = {}
+        
+        # Registra as respostas recebidas por jogador
+        partida["respostas_recebidas"] = set()
+        
+        app.logger.info(f"Rodada {rodada_atual_finalizada} finalizada. Preparando abertura da rodada {texto_rodada_atual}.")
+        
+        return jsonify({
+            "mensagem": f"Rodada {rodada_atual_finalizada} finalizada. Preparando abertura da rodada {texto_rodada_atual}.",
+            "rodada_finalizada": rodada_atual_finalizada,
+            "rodada_atual": partida["rodada_atual"],
+            "texto_rodada_atual": texto_rodada_atual,
+            "status": partida["status"],
+            "participantes": partida["participantes"],
+            "pontuacoes": pontos,
+            "tempo_abertura": partida["tempo_abertura"],
+            "inicio_timer": partida["tempo_inicio"]
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Erro ao finalizar/iniciar rodada: {e}")
+        import traceback
+        app.logger.error(traceback.format_exc())
+        return jsonify({
+            "erro": "Erro ao processar requisição",
+            "detalhes": str(e),
+            "status": "erro",
+            "rodada_atual": partida.get("rodada_atual", 0),
+            "texto_rodada_atual": "Erro"
+        }), 500
 
 # Endpoint para aguardar
 @app.route('/api/aguardar', methods=['POST'])
@@ -1470,9 +2303,19 @@ def obter_partida():
     # Calcula o tempo restante se estiver em uma rodada
     tempo_restante = max(0, partida["duracao_rodada"] - (time.time() - partida["tempo_inicio"])) if partida["timer_ativo"] else 0
     
+    # Determina se a rodada atual é a última
+    rodada_atual_e_ultima = partida["rodada_atual"] == partida["total_rodadas"]
+    
+    # Formata o texto da rodada atual
+    # Se a rodada for 0 (partida iniciada mas sem nenhuma rodada ativa), exibir como 1
+    texto_rodada_atual = "FINAL" if rodada_atual_e_ultima else (
+        "1" if partida["rodada_atual"] == 0 else str(partida["rodada_atual"])
+    )
+    
     return jsonify({
         "status": partida["status"],
         "rodada_atual": partida["rodada_atual"],
+        "texto_rodada_atual": texto_rodada_atual,
         "total_rodadas": partida["total_rodadas"],
         "timer_ativo": partida["timer_ativo"],
         "tempo_restante": tempo_restante,
@@ -1637,5 +2480,362 @@ def obter_jogadores_perdedores():
         "configuracao": partida["configuracao"]
     })
 
+# Endpoint para iniciar a abertura da rodada (15 segundos antes de iniciar efetivamente)
+@app.route('/api/abertura_rodada', methods=['POST'])
+def abertura_rodada():
+    # Verifica se o jogo está iniciado
+    if partida["status"] != "iniciada":
+        return jsonify({
+            "erro": "Não é possível iniciar a abertura de rodada neste momento",
+            "status": partida["status"]
+        }), 400
+    
+    # Se a rodada atual já é a última, não podemos avançar mais
+    if partida["rodada_atual"] >= partida["total_rodadas"]:
+        return jsonify({
+            "erro": "Todas as rodadas já foram jogadas",
+            "status": "erro"
+        }), 400
+    
+    # Determina o número da próxima rodada
+    proxima_rodada = partida["rodada_atual"] + 1
+    
+    # Formata o texto da próxima rodada
+    texto_proxima_rodada = "FINAL" if proxima_rodada == partida["total_rodadas"] else str(proxima_rodada)
+    
+    # Registra a próxima rodada
+    partida["proxima_rodada"] = proxima_rodada
+    partida["texto_proxima_rodada"] = texto_proxima_rodada
+    
+    # Atualiza o status da partida para 'abertura'
+    partida["status"] = "abertura"
+    partida["tempo_inicio"] = time.time()
+    partida["ultima_atualizacao"] = time.time()
+    
+    # Define o tempo da abertura (pode ser configurável)
+    tempo_abertura = 15  # segundos
+    
+    # Prepara para a próxima rodada
+    app.logger.info(f"Iniciando abertura para rodada {proxima_rodada}")
+    
+    # Retorna os dados da abertura
+    return jsonify({
+        "mensagem": f"Abertura para a rodada {texto_proxima_rodada} iniciada",
+        "proxima_rodada": proxima_rodada,
+        "texto_proxima_rodada": texto_proxima_rodada,
+        "tempo_abertura": tempo_abertura,
+        "total_rodadas": partida["total_rodadas"]
+    })
+
+# Endpoint para verificar o status da abertura
+@app.route('/api/status_abertura', methods=['GET'])
+def status_abertura():
+    # Verifica se o jogo está em modo abertura
+    if partida["status"] != "abertura":
+        return jsonify({
+            "erro": "Não há uma abertura de rodada em andamento",
+            "status_atual": partida["status"]
+        }), 400
+    
+    # Calcula o tempo restante
+    tempo_atual = time.time()
+    tempo_passado = tempo_atual - partida["tempo_inicio"]
+    tempo_restante = max(0, partida["tempo_abertura"] - tempo_passado)
+    
+    # Se o tempo acabou, atualiza o status
+    if tempo_restante <= 0:
+        partida["status"] = "iniciada"
+        
+        return jsonify({
+            "status": "concluida",
+            "mensagem": "Abertura concluída, pronto para iniciar a rodada",
+            "proxima_rodada": partida["proxima_rodada"],
+            "total_rodadas": partida["total_rodadas"]
+        })
+    
+    # Retorna o status da abertura
+    return jsonify({
+        "status": "em_andamento",
+        "tempo_restante": tempo_restante,
+        "tempo_total": partida["tempo_abertura"],
+        "progresso": (partida["tempo_abertura"] - tempo_restante) / partida["tempo_abertura"] * 100,
+        "proxima_rodada": partida["proxima_rodada"],
+        "total_rodadas": partida["total_rodadas"]
+    })
+
+# Endpoint para obter o status da rodada atual
+@app.route('/api/status_rodada', methods=['GET'])
+def status_rodada():
+    # Verifica se o jogo está em uma rodada ativa
+    if partida["status"] != "rodada_ativa":
+        return jsonify({
+            "erro": "Não há uma rodada ativa no momento",
+            "status_atual": partida["status"]
+        }), 400
+    
+    # Calcula o tempo restante
+    tempo_atual = time.time()
+    tempo_passado = tempo_atual - partida["tempo_inicio"]
+    tempo_restante = max(0, partida["duracao_rodada"] - tempo_passado)
+    
+    # Verifica se o tempo acabou
+    if tempo_restante <= 0 and partida["timer_ativo"]:
+        partida["timer_ativo"] = False
+    
+    # Obtém os dados da rodada atual
+    dados_rodada = partida.get("rodada_dados", {
+        "pergunta": f"Pergunta da rodada {partida['rodada_atual']}",
+        "opcoes": [
+            {"id": 1, "texto": "Opção A"},
+            {"id": 2, "texto": "Opção B"},
+            {"id": 3, "texto": "Opção C"},
+            {"id": 4, "texto": "Opção D"}
+        ],
+        "resposta_correta": 1
+    })
+    
+    return jsonify({
+        "status": partida["status"],
+        "rodada_atual": partida["rodada_atual"],
+        "total_rodadas": partida["total_rodadas"],
+        "timer_ativo": partida["timer_ativo"],
+        "tempo_restante": tempo_restante,
+        "tempo_total": partida["duracao_rodada"],
+        "progresso": (partida["duracao_rodada"] - tempo_restante) / partida["duracao_rodada"] * 100,
+        "pergunta": dados_rodada["pergunta"],
+        "opcoes": dados_rodada["opcoes"]
+    })
+
+# Endpoint para consultar as respostas dos jogadores na rodada atual
+@app.route('/api/respostas_rodada', methods=['GET'])
+def respostas_rodada():
+    # Verifica se há respostas registradas
+    if "respostas" not in partida:
+        return jsonify({
+            "mensagem": "Nenhuma resposta registrada ainda",
+            "rodada_atual": partida["rodada_atual"],
+            "total_rodadas": partida["total_rodadas"],
+            "status": partida["status"],
+            "respostas": {}
+        })
+    
+    # Obtém dados da rodada atual
+    dados_rodada = partida.get("rodada_dados", {})
+    pergunta = dados_rodada.get("pergunta", "")
+    opcoes = dados_rodada.get("opcoes", [])
+    resposta_correta = dados_rodada.get("resposta_correta", 1)
+    
+    # Monta resposta com informações de cada jogador
+    respostas_por_jogador = {}
+    for jogador_id, resposta_info in partida["respostas"].items():
+        # Busca informações do jogador
+        jogador = next((j for j in partida["participantes"] if str(j["id"]) == jogador_id), None)
+        if jogador:
+            respostas_por_jogador[jogador_id] = {
+                "jogador_id": jogador_id,
+                "jogador_nome": jogador["nome"],
+                "resposta": resposta_info["resposta"],
+                "correta": resposta_info["correta"],
+                "pontos": resposta_info["pontos"],
+                "tempo": resposta_info["tempo"]
+            }
+    
+    # Calcula estatísticas
+    total_respostas = len(respostas_por_jogador)
+    respostas_corretas = sum(1 for r in partida["respostas"].values() if r["correta"])
+    
+    return jsonify({
+        "rodada_atual": partida["rodada_atual"],
+        "total_rodadas": partida["total_rodadas"],
+        "status": partida["status"],
+        "pergunta": pergunta,
+        "opcoes": opcoes,
+        "resposta_correta": resposta_correta,
+        "total_respostas": total_respostas,
+        "respostas_corretas": respostas_corretas,
+        "respostas": respostas_por_jogador
+    })
+
+# Endpoint para verificar o status e avançar automaticamente se necessário
+@app.route('/api/verificar_avancar', methods=['GET'])
+def verificar_avancar():
+    # Obtém o total de rodadas da configuração
+    total_rodadas = partida["configuracao"].get("total_rodadas", 10)
+    
+    # Verifica se uma rodada está ativa
+    if partida["status"] != "rodada_ativa":
+        # Determina se a rodada atual é a última
+        rodada_atual_e_ultima = partida["rodada_atual"] == total_rodadas
+        
+        # Formata o texto da rodada atual
+        # Se a rodada for 0 (partida iniciada mas sem nenhuma rodada ativa), exibir como 1
+        texto_rodada_atual = "FINAL" if rodada_atual_e_ultima else (
+            "1" if partida["rodada_atual"] == 0 else str(partida["rodada_atual"])
+        )
+        
+        return jsonify({
+            "status": partida["status"],
+            "avancar": False,
+            "rodada_atual": partida["rodada_atual"],
+            "texto_rodada_atual": texto_rodada_atual,
+            "mensagem": "Não há uma rodada ativa para avançar"
+        })
+    
+    # Tempo atual
+    tempo_atual = time.time()
+    
+    # Verifica se o timer está ativo
+    if not partida["timer_ativo"]:
+        # Determina se a rodada atual é a última
+        rodada_atual_e_ultima = partida["rodada_atual"] == total_rodadas
+        
+        # Formata o texto da rodada atual
+        texto_rodada_atual = "FINAL" if rodada_atual_e_ultima else str(partida["rodada_atual"])
+        
+        return jsonify({
+            "status": partida["status"],
+            "avancar": False,
+            "rodada_atual": partida["rodada_atual"],
+            "texto_rodada_atual": texto_rodada_atual,
+            "mensagem": "Timer não está ativo"
+        })
+    
+    # Calcula o tempo restante
+    tempo_restante = max(0, partida["duracao_rodada"] - (tempo_atual - partida["tempo_inicio"]))
+    
+    # Verifica se todos os jogadores já responderam
+    todos_responderam = len(partida.get("respostas_recebidas", set())) >= len(partida["participantes"])
+    
+    # Verifica se deve avançar (todos responderam ou tempo acabou)
+    deve_avancar = todos_responderam or tempo_restante <= 0 or partida.get("avancar_rodada", False)
+    
+    # Determina se a próxima rodada será a última (para exibir "FINAL")
+    proxima_e_ultima = (partida["rodada_atual"] + 1) == total_rodadas
+    
+    # Determina se a rodada atual é a última
+    rodada_atual_e_ultima = partida["rodada_atual"] == total_rodadas
+    
+    # Formate o texto da rodada atual
+    texto_rodada_atual = "FINAL" if rodada_atual_e_ultima else str(partida["rodada_atual"])
+    
+    # Formate o texto da próxima rodada
+    texto_proxima_rodada = "FINAL" if proxima_e_ultima else str(partida["rodada_atual"] + 1)
+    
+    # Se deve avançar, finaliza a rodada atual e inicia a próxima
+    if deve_avancar:
+        # Finaliza a rodada atual com as pontuações já calculadas
+        try:
+            # Finaliza o timer
+            partida["timer_ativo"] = False
+            
+            # Se a flag de avançar já estava definida, usa as pontuações já calculadas
+            # Caso contrário, limpa a flag
+            if "avancar_rodada" in partida:
+                del partida["avancar_rodada"]
+            
+            # Monta o objeto de pontos a partir das respostas recebidas
+            pontos = {}
+            for jogador_id, resposta_info in partida.get("respostas", {}).items():
+                pontos[jogador_id] = resposta_info["pontos"]
+            
+            # Atualiza a pontuação dos jogadores
+            for jogador in partida["participantes"]:
+                jogador_id = str(jogador["id"])
+                if jogador_id in pontos:
+                    # A pontuação já foi atualizada no endpoint de enviar_resposta,
+                    # não precisamos adicionar novamente
+                    pass
+                else:
+                    # Jogador não respondeu, adiciona 0 pontos
+                    pontos[jogador_id] = 0
+            
+            # Muda o status para permitir iniciar uma nova rodada
+            partida["status"] = "iniciada"
+            partida["ultima_atualizacao"] = tempo_atual
+            
+            # Verifica se é a última rodada
+            if partida["rodada_atual"] >= total_rodadas:
+                # Determina o vencedor
+                vencedor = max(partida["participantes"], key=lambda x: x["pontuacao"])
+                vencedor["vitorias"] += 1
+                
+                # Atualiza o histórico
+                partida["ultima_partida"] = {
+                    "data": tempo_atual,
+                    "vencedor": {
+                        "id": vencedor["id"],
+                        "nome": vencedor["nome"],
+                        "foto": vencedor["foto"],
+                        "pontuacao": vencedor["pontuacao"]
+                    },
+                    "pontuacao_maxima": vencedor["pontuacao"]
+                }
+                
+                # Finaliza a partida
+                partida["status"] = "finalizada"
+                
+                return jsonify({
+                    "status": "finalizada",
+                    "avancar": False,
+                    "finalizada": True,
+                    "mensagem": "Jogo finalizado!",
+                    "rodada_atual": partida["rodada_atual"],
+                    "texto_rodada_atual": texto_rodada_atual,
+                    "vencedor": {
+                        "id": vencedor["id"],
+                        "nome": vencedor["nome"],
+                        "pontuacao": vencedor["pontuacao"]
+                    },
+                    "participantes": partida["participantes"]
+                })
+            
+            # Se não for a última rodada, informa que pode avançar
+            proxima_rodada = partida["rodada_atual"] + 1
+            
+            return jsonify({
+                "status": "iniciada",
+                "avancar": True,
+                "proxima_rodada": proxima_rodada,
+                "rodada_atual": partida["rodada_atual"],
+                "total_rodadas": total_rodadas,
+                "texto_rodada_atual": texto_rodada_atual,
+                "texto_proxima_rodada": texto_proxima_rodada,
+                "mensagem": f"Rodada {texto_rodada_atual} finalizada. Pode avançar para a rodada {texto_proxima_rodada}.",
+                "pontuacoes": pontos,
+                "participantes": partida["participantes"]
+            })
+                
+        except Exception as e:
+            app.logger.error(f"Erro ao avançar rodada: {e}")
+            import traceback
+            app.logger.error(traceback.format_exc())
+            return jsonify({
+                "status": partida["status"],
+                "avancar": False,
+                "rodada_atual": partida["rodada_atual"],
+                "texto_rodada_atual": texto_rodada_atual,
+                "erro": str(e),
+                "mensagem": "Erro ao tentar avançar para a próxima rodada"
+            }), 500
+    
+    # Se não deve avançar, retorna o status atual
+    return jsonify({
+        "status": partida["status"],
+        "avancar": False,
+        "tempo_restante": tempo_restante,
+        "tempo_total": partida["duracao_rodada"],
+        "rodada_atual": partida["rodada_atual"],
+        "texto_rodada_atual": texto_rodada_atual,
+        "total_rodadas": total_rodadas,
+        "total_respostas": len(partida.get("respostas_recebidas", set())),
+        "total_jogadores": len(partida["participantes"]),
+        "todos_responderam": todos_responderam,
+        "mensagem": "Rodada em andamento"
+    })
+
 if __name__ == '__main__':
+    # Mata qualquer processo anterior na porta 5001 (funciona apenas em sistemas Unix)
+    os.system("pkill -f 'python.*app.py'")
+    
+    # Inicia o servidor na porta 5001
     app.run(debug=True, host='0.0.0.0', port=5001) 
