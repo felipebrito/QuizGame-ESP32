@@ -1,0 +1,162 @@
+/* Estilos Gerais */
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --warning-color: #f39c12;
+    --dark-color: #2c3e50;
+    --light-color: #ecf0f1;
+}
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header {
+    background-color: var(--dark-color);
+    color: white;
+    padding: 10px 0;
+    margin-bottom: 20px;
+}
+
+/* Status do Jogo */
+.status-apresentacao {
+    color: var(--primary-color);
+}
+
+.status-selecao {
+    color: var(--secondary-color);
+}
+
+.status-aguardando {
+    color: var(--warning-color);
+}
+
+.status-iniciada {
+    color: #9b59b6;
+}
+
+.status-rodada_ativa {
+    color: #e67e22;
+}
+
+.status-finalizada {
+    color: var(--danger-color);
+}
+
+/* Avatares */
+.player-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary-color);
+}
+
+.player-avatar-small {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--primary-color);
+}
+
+.player-preview-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--primary-color);
+    margin: 10px 0;
+}
+
+.participant-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary-color);
+}
+
+/* Cards e Containers */
+.menu-sidebar .card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.content-area .card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background-color: var(--dark-color);
+    color: white;
+    font-weight: bold;
+}
+
+/* Timers e Progresso */
+.timer-display {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.progress {
+    height: 30px;
+    margin-top: 10px;
+}
+
+/* JSON e Visualização de Dados */
+.json-display {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.participants-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.participant-card {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: calc(33.33% - 10px);
+}
+
+.participant-info {
+    margin-left: 10px;
+}
+
+.participant-info h5 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.participant-info p {
+    margin: 5px 0 0;
+    font-size: 14px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .participant-card {
+        width: calc(50% - 10px);
+    }
+}
+
+@media (max-width: 576px) {
+    .participant-card {
+        width: 100%;
+    }
+} 

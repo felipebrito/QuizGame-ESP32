@@ -129,11 +129,40 @@ pip install -r requirements.txt
 
 ## Executando o Servidor
 
+### Método 1: Linha de Comando
 ```bash
 python app.py
 ```
 
 O servidor estará disponível em `http://localhost:5001`
+
+### Método 2: Scripts de Inicialização
+
+#### Windows
+Execute o arquivo `run_manager.bat` com duplo clique ou pelo terminal:
+```bash
+run_manager.bat
+```
+
+#### Linux/Mac
+Execute o script shell:
+```bash
+./run_manager.sh
+```
+
+## Interface de Gerenciamento
+
+O sistema inclui uma interface web para gerenciamento do jogo, que permite:
+
+- Cadastrar, editar e remover jogadores
+- Configurar parâmetros da partida
+- Controlar o fluxo do jogo (iniciar, finalizar rodadas, etc.)
+- Visualizar rankings e resultados
+
+Para acessar a interface:
+```
+http://localhost:5001/gerenciador
+```
 
 ## Endpoints da API
 

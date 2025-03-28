@@ -1,9 +1,14 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 import time  # Importando o módulo time para controle do timer
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', template_folder='templates')
 CORS(app)  # Permite requisições cross-origin
+
+# Rota para a interface de gerenciamento
+@app.route('/gerenciador', methods=['GET'])
+def gerenciador():
+    return render_template('index.html')
 
 # Página inicial da API
 @app.route('/', methods=['GET'])
