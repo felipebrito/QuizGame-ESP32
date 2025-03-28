@@ -82,7 +82,7 @@ A versão 2.0 utiliza o protocolo ESP-NOW para comunicação direta entre dispos
 
 ## Licença
 
-Este projeto é livre para uso não-comercial e modificação.
+Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
 ---
 
@@ -99,7 +99,7 @@ API para gerenciamento de um jogo de quiz com múltiplos jogadores.
 - Controle de rodadas (início, fim, pontuação)
 - Sistema de ranking e histórico
 - Timer para controle de tempo
-- Estados do jogo (apresentação, seleção, aguardando, iniciada, rodada_ativa, finalizada)
+- Estados do jogo (apresentação, selecao, aguardando, iniciada, rodada_ativa, finalizada)
 
 ## Requisitos
 
@@ -111,8 +111,8 @@ API para gerenciamento de um jogo de quiz com múltiplos jogadores.
 
 1. Clone o repositório:
 ```bash
-git clone https://github.com/seu-usuario/quiz-game.git
-cd quiz-game
+git clone https://github.com/felipebrito/QuizGame-ESP32.git
+cd QuizGame-ESP32
 ```
 
 2. Crie um ambiente virtual:
