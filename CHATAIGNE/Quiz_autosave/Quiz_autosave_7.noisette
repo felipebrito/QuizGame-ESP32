@@ -223,200 +223,6 @@
           "viewZoom": 1.0
         },
         "values": {
-          "parameters": [
-            {
-              "value": 30.0,
-              "controlAddress": "/duracao_rodada",
-              "type": "Float",
-              "niceName": "duracao_rodada",
-              "customizable": true,
-              "removable": true,
-              "description": "duracao_rodada",
-              "hideInEditor": false,
-              "feedbackOnly": false
-            },
-            {
-              "value": "https://randomuser.me/api/portraits/men/22.jpg",
-              "controlAddress": "/jogador1_foto",
-              "type": "String",
-              "niceName": "jogador1_foto",
-              "customizable": true,
-              "removable": true,
-              "description": "jogador1_foto",
-              "hideInEditor": false,
-              "feedbackOnly": false
-            },
-            {
-              "value": "Pedro Oliveira",
-              "controlAddress": "/jogador1_nome",
-              "type": "String",
-              "niceName": "jogador1_nome",
-              "customizable": true,
-              "removable": true,
-              "description": "jogador1_nome",
-              "hideInEditor": false,
-              "feedbackOnly": false
-            },
-            {
-              "value": 95,
-              "hexMode": false,
-              "controlAddress": "/jogador1_pontos",
-              "type": "Integer",
-              "niceName": "jogador1_pontos",
-              "customizable": true,
-              "removable": true,
-              "description": "jogador1_pontos",
-              "hideInEditor": false,
-              "feedbackOnly": false
-            },
-            {
-              "value": "https://randomuser.me/api/portraits/women/42.jpg",
-              "controlAddress": "/jogador2_foto",
-              "type": "String",
-              "niceName": "jogador2_foto",
-              "customizable": true,
-              "removable": true,
-              "description": "jogador2_foto",
-              "hideInEditor": false,
-              "feedbackOnly": false
-            },
-            {
-              "value": "Maria Silva",
-              "controlAddress": "/jogador2_nome",
-              "type": "String",
-              "niceName": "jogador2_nome",
-              "customizable": true,
-              "removable": true,
-              "description": "jogador2_nome",
-              "hideInEditor": false,
-              "feedbackOnly": false
-            },
-            {
-              "value": 85,
-              "hexMode": false,
-              "controlAddress": "/jogador2_pontos",
-              "type": "Integer",
-              "niceName": "jogador2_pontos",
-              "customizable": true,
-              "removable": true,
-              "description": "jogador2_pontos",
-              "hideInEditor": false,
-              "feedbackOnly": false
-            },
-            {
-              "value": "https://randomuser.me/api/portraits/women/56.jpg",
-              "controlAddress": "/jogador3_foto",
-              "type": "String",
-              "niceName": "jogador3_foto",
-              "customizable": true,
-              "removable": true,
-              "description": "jogador3_foto",
-              "hideInEditor": false,
-              "feedbackOnly": false
-            },
-            {
-              "value": "Mariana Alves",
-              "controlAddress": "/jogador3_nome",
-              "type": "String",
-              "niceName": "jogador3_nome",
-              "customizable": true,
-              "removable": true,
-              "description": "jogador3_nome",
-              "hideInEditor": false,
-              "feedbackOnly": false
-            },
-            {
-              "value": 78,
-              "hexMode": false,
-              "controlAddress": "/jogador3_pontos",
-              "type": "Integer",
-              "niceName": "jogador3_pontos",
-              "customizable": true,
-              "removable": true,
-              "description": "jogador3_pontos",
-              "hideInEditor": false,
-              "feedbackOnly": false
-            },
-            {
-              "value": "Quiz Game - Aguardando in\u00edcio da partida",
-              "controlAddress": "/mensagem",
-              "type": "String",
-              "niceName": "mensagem",
-              "customizable": true,
-              "removable": true,
-              "description": "mensagem",
-              "hideInEditor": false,
-              "feedbackOnly": false
-            },
-            {
-              "value": "apresentacao",
-              "controlAddress": "/status",
-              "type": "String",
-              "niceName": "status",
-              "customizable": true,
-              "removable": true,
-              "description": "status",
-              "hideInEditor": false,
-              "feedbackOnly": false
-            },
-            {
-              "value": "default",
-              "controlAddress": "/tema",
-              "type": "String",
-              "niceName": "tema",
-              "customizable": true,
-              "removable": true,
-              "description": "tema",
-              "hideInEditor": false,
-              "feedbackOnly": false
-            },
-            {
-              "value": 0,
-              "hexMode": false,
-              "controlAddress": "/total_partidas",
-              "type": "Integer",
-              "niceName": "total_partidas",
-              "customizable": true,
-              "removable": true,
-              "description": "total_partidas",
-              "hideInEditor": false,
-              "feedbackOnly": false
-            },
-            {
-              "value": 10,
-              "hexMode": false,
-              "controlAddress": "/total_rodadas",
-              "type": "Integer",
-              "niceName": "total_rodadas",
-              "customizable": true,
-              "removable": true,
-              "description": "total_rodadas",
-              "hideInEditor": false,
-              "feedbackOnly": false
-            },
-            {
-              "value": 1.743167454798854e9,
-              "controlAddress": "/ultima_atualizacao",
-              "type": "Float",
-              "niceName": "ultima_atualizacao",
-              "customizable": true,
-              "removable": true,
-              "description": "ultima_atualizacao",
-              "hideInEditor": false,
-              "feedbackOnly": false
-            },
-            {
-              "value": 1.743167454798862e9,
-              "controlAddress": "/ultima_partida_data",
-              "type": "Float",
-              "niceName": "ultima_partida_data",
-              "customizable": true,
-              "removable": true,
-              "description": "ultima_partida_data",
-              "hideInEditor": false,
-              "feedbackOnly": false
-            }
-          ]
         }
       },
       {
@@ -895,7 +701,8 @@
                   "value": 30.0,
                   "controlMode": 2,
                   "reference": {
-                    "value": "/modules/http/values/duracao_rodada",
+                    "value": "",
+                    "ghostValue": "/modules/http/values/duracao_rodada",
                     "controlAddress": "/reference"
                   },
                   "controlAddress": "/duracaoRodada",
@@ -918,7 +725,8 @@
                   "value": "apresentacao",
                   "controlMode": 2,
                   "reference": {
-                    "value": "/modules/http/values/status",
+                    "value": "",
+                    "ghostValue": "/modules/http/values/status",
                     "controlAddress": "/reference"
                   },
                   "controlAddress": "/status",
@@ -941,7 +749,8 @@
                   "value": "Quiz Game - Aguardando in\u00edcio da partida",
                   "controlMode": 2,
                   "reference": {
-                    "value": "/modules/http/values/mensagem",
+                    "value": "",
+                    "ghostValue": "/modules/http/values/mensagem",
                     "controlAddress": "/reference"
                   },
                   "controlAddress": "/mensagem",
@@ -964,7 +773,8 @@
                   "value": "default",
                   "controlMode": 2,
                   "reference": {
-                    "value": "/modules/http/values/tema",
+                    "value": "",
+                    "ghostValue": "/modules/http/values/tema",
                     "controlAddress": "/reference"
                   },
                   "controlAddress": "/tema",
@@ -986,7 +796,8 @@
                 {
                   "controlMode": 2,
                   "reference": {
-                    "value": "/modules/http/values/total_partidas",
+                    "value": "",
+                    "ghostValue": "/modules/http/values/total_partidas",
                     "controlAddress": "/reference"
                   },
                   "hexMode": false,
@@ -1010,7 +821,8 @@
                   "value": 10,
                   "controlMode": 2,
                   "reference": {
-                    "value": "/modules/http/values/total_rodadas",
+                    "value": "",
+                    "ghostValue": "/modules/http/values/total_rodadas",
                     "controlAddress": "/reference"
                   },
                   "hexMode": false,
@@ -1034,7 +846,8 @@
                   "value": "1743167488.000",
                   "controlMode": 2,
                   "reference": {
-                    "value": "/modules/http/values/ultima_atualizacao",
+                    "value": "",
+                    "ghostValue": "/modules/http/values/ultima_atualizacao",
                     "controlAddress": "/reference"
                   },
                   "controlAddress": "/ultimaAtualizacao",
@@ -1067,213 +880,6 @@
         }
       },
       {
-        "niceName": "Group",
-        "type": "CVGroup",
-        "params": {
-        },
-        "variables": {
-          "items": [
-            {
-              "parameters": [
-                {
-                  "value": "Em que ano o homem pisou na lua pela primeira vez?",
-                  "controlMode": 2,
-                  "reference": {
-                    "value": "",
-                    "ghostValue": "/modules/http/values/texto",
-                    "controlAddress": "/reference"
-                  },
-                  "controlAddress": "/pergunta",
-                  "feedbackOnly": false,
-                  "type": "String",
-                  "niceName": "Pergunta",
-                  "customizable": true,
-                  "removable": false,
-                  "description": "Custom control of type String",
-                  "hideInEditor": false
-                }
-              ],
-              "niceName": "Pergunta",
-              "editorIsCollapsed": true,
-              "type": "String Parameter"
-            },
-            {
-              "parameters": [
-                {
-                  "value": 30.0,
-                  "controlAddress": "/tempoRestante",
-                  "feedbackOnly": false,
-                  "type": "Float",
-                  "niceName": "tempoRestante",
-                  "customizable": true,
-                  "removable": false,
-                  "description": "Custom control of type Float",
-                  "hideInEditor": false
-                }
-              ],
-              "niceName": "tempoRestante",
-              "editorIsCollapsed": true,
-              "type": "Float Parameter"
-            },
-            {
-              "parameters": [
-                {
-                  "value": 30.0,
-                  "controlMode": 2,
-                  "reference": {
-                    "value": "/sequences/tempoDeResposta/totalTime",
-                    "controlAddress": "/reference"
-                  },
-                  "controlAddress": "/duracaoRodada",
-                  "feedbackOnly": false,
-                  "type": "Float",
-                  "niceName": "duracaoRodada",
-                  "customizable": true,
-                  "removable": false,
-                  "description": "Custom control of type Float",
-                  "hideInEditor": false
-                }
-              ],
-              "niceName": "duracaoRodada",
-              "editorIsCollapsed": true,
-              "type": "Float Parameter"
-            }
-          ],
-          "viewOffset": [
-            0,
-            0
-          ],
-          "viewZoom": 1.0
-        },
-        "presets": {
-          "viewOffset": [
-            0,
-            0
-          ],
-          "viewZoom": 1.0
-        }
-      },
-      {
-        "niceName": "Jogador 1",
-        "type": "CVGroup",
-        "params": {
-        },
-        "variables": {
-          "items": [
-            {
-              "parameters": [
-                {
-                  "value": 1,
-                  "controlMode": 2,
-                  "reference": {
-                    "value": "",
-                    "ghostValue": "/modules/http/values/participantes/0/id",
-                    "controlAddress": "/reference"
-                  },
-                  "hexMode": false,
-                  "controlAddress": "/id",
-                  "feedbackOnly": false,
-                  "type": "Integer",
-                  "niceName": "id",
-                  "customizable": true,
-                  "removable": false,
-                  "description": "Custom control of type Integer",
-                  "hideInEditor": false
-                }
-              ],
-              "niceName": "id",
-              "editorIsCollapsed": true,
-              "type": "Int Parameter"
-            },
-            {
-              "parameters": [
-                {
-                  "value": "Maria Silva",
-                  "controlMode": 2,
-                  "reference": {
-                    "value": "",
-                    "ghostValue": "/modules/http/values/participantes/0/nome",
-                    "controlAddress": "/reference"
-                  },
-                  "controlAddress": "/nome",
-                  "feedbackOnly": false,
-                  "type": "String",
-                  "niceName": "nome",
-                  "customizable": true,
-                  "removable": false,
-                  "description": "Custom control of type String",
-                  "hideInEditor": false
-                }
-              ],
-              "niceName": "nome",
-              "editorIsCollapsed": true,
-              "type": "String Parameter"
-            },
-            {
-              "parameters": [
-                {
-                  "value": 0,
-                  "controlMode": 2,
-                  "reference": {
-                    "value": "",
-                    "ghostValue": "/modules/http/values/classificacao/0/pontuacao",
-                    "controlAddress": "/reference"
-                  },
-                  "hexMode": false,
-                  "controlAddress": "/pontos",
-                  "feedbackOnly": false,
-                  "type": "Integer",
-                  "niceName": "pontos",
-                  "customizable": true,
-                  "removable": false,
-                  "description": "Custom control of type Integer",
-                  "hideInEditor": false
-                }
-              ],
-              "niceName": "pontos",
-              "editorIsCollapsed": true,
-              "type": "Int Parameter"
-            },
-            {
-              "parameters": [
-                {
-                  "value": "https://randomuser.me/api/portraits/women/42.jpg",
-                  "controlMode": 2,
-                  "reference": {
-                    "value": "",
-                    "ghostValue": "/modules/http/values/participantes/0/foto",
-                    "controlAddress": "/reference"
-                  },
-                  "controlAddress": "/foto",
-                  "feedbackOnly": false,
-                  "type": "String",
-                  "niceName": "foto",
-                  "customizable": true,
-                  "removable": false,
-                  "description": "Custom control of type String",
-                  "hideInEditor": false
-                }
-              ],
-              "niceName": "foto",
-              "editorIsCollapsed": true,
-              "type": "String Parameter"
-            }
-          ],
-          "viewOffset": [
-            0,
-            0
-          ],
-          "viewZoom": 1.0
-        },
-        "presets": {
-          "viewOffset": [
-            0,
-            0
-          ],
-          "viewZoom": 1.0
-        }
-      },
-      {
         "niceName": "Ranking > 1",
         "type": "CVGroup",
         "params": {
@@ -1286,7 +892,8 @@
                   "value": "Pedro Oliveira",
                   "controlMode": 2,
                   "reference": {
-                    "value": "/modules/http/values/jogador1_nome",
+                    "value": "",
+                    "ghostValue": "/modules/http/values/jogador1_nome",
                     "controlAddress": "/reference"
                   },
                   "controlAddress": "/nome",
@@ -1309,7 +916,8 @@
                   "value": 95,
                   "controlMode": 2,
                   "reference": {
-                    "value": "/modules/http/values/jogador1_pontos",
+                    "value": "",
+                    "ghostValue": "/modules/http/values/jogador1_pontos",
                     "controlAddress": "/reference"
                   },
                   "hexMode": false,
@@ -1333,7 +941,8 @@
                   "value": "https://randomuser.me/api/portraits/men/22.jpg",
                   "controlMode": 2,
                   "reference": {
-                    "value": "/modules/http/values/jogador1_foto",
+                    "value": "",
+                    "ghostValue": "/modules/http/values/jogador1_foto",
                     "controlAddress": "/reference"
                   },
                   "controlAddress": "/foto",
@@ -1378,7 +987,8 @@
                   "value": "Maria Silva",
                   "controlMode": 2,
                   "reference": {
-                    "value": "/modules/http/values/jogador2_nome",
+                    "value": "",
+                    "ghostValue": "/modules/http/values/jogador2_nome",
                     "controlAddress": "/reference"
                   },
                   "controlAddress": "/nome",
@@ -1401,7 +1011,8 @@
                   "value": 85,
                   "controlMode": 2,
                   "reference": {
-                    "value": "/modules/http/values/jogador2_pontos",
+                    "value": "",
+                    "ghostValue": "/modules/http/values/jogador2_pontos",
                     "controlAddress": "/reference"
                   },
                   "hexMode": false,
@@ -1425,7 +1036,8 @@
                   "value": "https://randomuser.me/api/portraits/women/42.jpg",
                   "controlMode": 2,
                   "reference": {
-                    "value": "/modules/http/values/jogador2_foto",
+                    "value": "",
+                    "ghostValue": "/modules/http/values/jogador2_foto",
                     "controlAddress": "/reference"
                   },
                   "controlAddress": "/foto",
@@ -1470,7 +1082,8 @@
                   "value": "Mariana Alves",
                   "controlMode": 2,
                   "reference": {
-                    "value": "/modules/http/values/jogador3_nome",
+                    "value": "",
+                    "ghostValue": "/modules/http/values/jogador3_nome",
                     "controlAddress": "/reference"
                   },
                   "controlAddress": "/nome",
@@ -1493,7 +1106,8 @@
                   "value": 78,
                   "controlMode": 2,
                   "reference": {
-                    "value": "/modules/http/values/jogador3_pontos",
+                    "value": "",
+                    "ghostValue": "/modules/http/values/jogador3_pontos",
                     "controlAddress": "/reference"
                   },
                   "hexMode": false,
@@ -1517,7 +1131,8 @@
                   "value": "https://randomuser.me/api/portraits/women/56.jpg",
                   "controlMode": 2,
                   "reference": {
-                    "value": "/modules/http/values/jogador3_foto",
+                    "value": "",
+                    "ghostValue": "/modules/http/values/jogador3_foto",
                     "controlAddress": "/reference"
                   },
                   "controlAddress": "/foto",
@@ -2194,7 +1809,8 @@
                     "command": {
                       "parameters": [
                         {
-                          "value": "/group/pergunta",
+                          "value": "",
+                          "ghostValue": "/group/pergunta",
                           "controlAddress": "/target"
                         },
                         {
@@ -2204,15 +1820,6 @@
                         {
                           "value": "Equals",
                           "controlAddress": "/operator"
-                        },
-                        {
-                          "value": "Em que ano o homem pisou na lua pela primeira vez?",
-                          "controlMode": 2,
-                          "reference": {
-                            "value": "/customVariables/customVariables/values/group/pergunta",
-                            "controlAddress": "/reference"
-                          },
-                          "controlAddress": "/value"
                         }
                       ],
                       "paramLinks": {
@@ -2346,7 +1953,8 @@
                                 "value": 30.0,
                                 "controlMode": 2,
                                 "reference": {
-                                  "value": "/customVariables/group/variables/duracaoRodada/duracaoRodada",
+                                  "value": "",
+                                  "ghostValue": "/customVariables/group/variables/duracaoRodada/duracaoRodada",
                                   "controlAddress": "/reference"
                                 },
                                 "controlAddress": "/#1"
@@ -2358,7 +1966,8 @@
                               "value": 30.0,
                               "controlMode": 2,
                               "reference": {
-                                "value": "/customVariables/group/variables/duracaoRodada/duracaoRodada",
+                                "value": "",
+                                "ghostValue": "/customVariables/group/variables/duracaoRodada/duracaoRodada",
                                 "controlAddress": "/reference"
                               },
                               "controlAddress": "/states/state/processors/iniciarTimer/consequencesTRUE/consequence/command/arguments/duracao/#1"
