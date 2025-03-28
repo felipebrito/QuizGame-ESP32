@@ -86,4 +86,287 @@ Este projeto é livre para uso não-comercial e modificação.
 
 ---
 
-Documentação atualizada em 28/03/2025. 
+Documentação atualizada em 28/03/2025.
+
+# Quiz Game API
+
+API para gerenciamento de um jogo de quiz com múltiplos jogadores.
+
+## Funcionalidades
+
+- Gerenciamento de jogadores (cadastro, atualização, remoção)
+- Configuração de partidas (seleção de jogadores, duração, rodadas)
+- Controle de rodadas (início, fim, pontuação)
+- Sistema de ranking e histórico
+- Timer para controle de tempo
+- Estados do jogo (apresentação, seleção, aguardando, iniciada, rodada_ativa, finalizada)
+
+## Requisitos
+
+- Python 3.8+
+- Flask
+- Outras dependências listadas em `requirements.txt`
+
+## Instalação
+
+1. Clone o repositório:
+```bash
+git clone https://github.com/seu-usuario/quiz-game.git
+cd quiz-game
+```
+
+2. Crie um ambiente virtual:
+```bash
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+```
+
+3. Instale as dependências:
+```bash
+pip install -r requirements.txt
+```
+
+## Executando o Servidor
+
+```bash
+python app.py
+```
+
+O servidor estará disponível em `http://localhost:5001`
+
+## Endpoints da API
+
+### Gerenciamento de Jogadores
+
+#### Cadastrar Jogador
+- **URL**: `/api/cadastrar_jogador`
+- **Método**: `POST`
+- **Descrição**: Cadastra um novo jogador
+- **Estado**: apresentacao
+- **Corpo**:
+```json
+{
+    "nome": "Nome do Jogador",
+    "foto": "URL da foto (opcional)"
+}
+```
+
+#### Listar Jogadores
+- **URL**: `/api/jogadores`
+- **Método**: `GET`
+- **Descrição**: Lista todos os jogadores cadastrados
+- **Estado**: apresentacao
+
+#### Obter Jogador
+- **URL**: `/api/jogador/<id>`
+- **Método**: `GET`
+- **Descrição**: Retorna os dados de um jogador específico
+- **Estado**: apresentacao
+
+#### Atualizar Jogador
+- **URL**: `/api/atualizar_jogador/<id>`
+- **Método**: `PUT`
+- **Descrição**: Atualiza os dados de um jogador
+- **Estado**: apresentacao
+- **Corpo**:
+```json
+{
+    "nome": "Novo Nome",
+    "foto": "Nova URL da foto"
+}
+```
+
+#### Remover Jogador
+- **URL**: `/api/remover_jogador/<id>`
+- **Método**: `DELETE`
+- **Descrição**: Remove um jogador cadastrado
+- **Estado**: apresentacao
+
+### Configuração da Partida
+
+#### Entrar no Modo Seleção
+- **URL**: `/api/modo_selecao`
+- **Método**: `POST`
+- **Descrição**: Entra no modo de seleção de jogadores
+- **Estado**: apresentacao
+
+#### Configurar Partida
+- **URL**: `/api/configurar_partida`
+- **Método**: `POST`
+- **Descrição**: Configura os parâmetros da partida
+- **Estado**: selecao
+- **Corpo**:
+```json
+{
+    "jogadores": [1, 2, 3],
+    "duracao_rodada": 30.0,
+    "total_rodadas": 10,
+    "tema": "default"
+}
+```
+
+#### Obter Configuração
+- **URL**: `/api/configuracao`
+- **Método**: `GET`
+- **Descrição**: Retorna a configuração atual
+- **Estado**: selecao
+
+#### Obter Jogadores Disponíveis
+- **URL**: `/api/jogadores_disponiveis`
+- **Método**: `GET`
+- **Descrição**: Retorna os jogadores disponíveis para seleção
+- **Estado**: selecao
+
+#### Obter Jogadores Selecionados
+- **URL**: `/api/jogadores_selecionados`
+- **Método**: `GET`
+- **Descrição**: Retorna os jogadores selecionados
+- **Estado**: selecao
+
+#### Obter Jogadores Não Selecionados
+- **URL**: `/api/jogadores_nao_selecionados`
+- **Método**: `GET`
+- **Descrição**: Retorna os jogadores não selecionados
+- **Estado**: selecao
+
+### Controle da Partida
+
+#### Aguardar
+- **URL**: `/api/aguardar`
+- **Método**: `POST`
+- **Descrição**: Aguarda o início da partida
+- **Estado**: selecao
+
+#### Iniciar Partida
+- **URL**: `/api/iniciar_partida`
+- **Método**: `POST`
+- **Descrição**: Inicia a partida com base na configuração
+- **Estado**: aguardando
+
+#### Iniciar Rodada
+- **URL**: `/api/iniciar_rodada`
+- **Método**: `POST`
+- **Descrição**: Inicia uma nova rodada
+- **Estado**: iniciada
+
+#### Finalizar Rodada
+- **URL**: `/api/finalizar_rodada`
+- **Método**: `POST`
+- **Descrição**: Finaliza a rodada atual
+- **Estado**: rodada_ativa
+- **Corpo**:
+```json
+{
+    "pontos": {
+        "1": 10,
+        "2": 5,
+        "3": 0
+    }
+}
+```
+
+### Status e Informações
+
+#### Obter Status
+- **URL**: `/api/status`
+- **Método**: `GET`
+- **Descrição**: Retorna o status atual do jogo
+
+#### Obter Partida
+- **URL**: `/api/partida`
+- **Método**: `GET`
+- **Descrição**: Retorna o status da partida
+- **Estado**: aguardando, iniciada, rodada_ativa, finalizada
+
+#### Obter Rodada
+- **URL**: `/api/rodada`
+- **Método**: `GET`
+- **Descrição**: Retorna o status da rodada atual
+- **Estado**: rodada_ativa
+
+#### Obter Timer
+- **URL**: `/api/timer`
+- **Método**: `GET`
+- **Descrição**: Retorna o status do timer
+- **Estado**: rodada_ativa
+
+#### Obter Participantes
+- **URL**: `/api/participantes`
+- **Método**: `GET`
+- **Descrição**: Retorna os participantes da partida
+- **Estado**: aguardando, iniciada, rodada_ativa, finalizada
+
+#### Obter Ranking
+- **URL**: `/api/ranking`
+- **Método**: `GET`
+- **Descrição**: Retorna o ranking dos jogadores
+- **Estado**: aguardando, iniciada, rodada_ativa, finalizada
+
+### Resultados e Histórico
+
+#### Obter Histórico
+- **URL**: `/api/historico`
+- **Método**: `GET`
+- **Descrição**: Retorna o histórico do jogo
+- **Estado**: apresentacao
+
+#### Obter Jogadores Vencedores
+- **URL**: `/api/jogadores_vencedores`
+- **Método**: `GET`
+- **Descrição**: Retorna os jogadores vencedores
+- **Estado**: finalizada
+
+#### Obter Jogadores Perdedores
+- **URL**: `/api/jogadores_perdedores`
+- **Método**: `GET`
+- **Descrição**: Retorna os jogadores perdedores
+- **Estado**: finalizada
+
+### Utilitários
+
+#### Reset
+- **URL**: `/api/reset`
+- **Método**: `POST`
+- **Descrição**: Reseta o jogo para o estado inicial
+
+## Estados do Jogo
+
+1. **apresentacao**
+   - Estado inicial
+   - Permite cadastro e gerenciamento de jogadores
+   - Permite visualizar histórico
+
+2. **selecao**
+   - Permite selecionar jogadores e configurar parâmetros
+   - Permite visualizar jogadores disponíveis e selecionados
+
+3. **aguardando**
+   - Aguarda confirmação para iniciar a partida
+   - Permite visualizar configuração e participantes
+
+4. **iniciada**
+   - Partida em andamento
+   - Permite iniciar rodadas
+   - Permite visualizar ranking e participantes
+
+5. **rodada_ativa**
+   - Rodada em andamento
+   - Timer ativo
+   - Permite finalizar rodada
+
+6. **finalizada**
+   - Partida concluída
+   - Permite visualizar resultados e histórico
+
+## Contribuindo
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## Licença
+
+Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes. 

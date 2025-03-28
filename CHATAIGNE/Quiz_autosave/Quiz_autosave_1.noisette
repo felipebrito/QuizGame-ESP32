@@ -1,0 +1,3759 @@
+{
+  "metaData": {
+    "version": "1.0.0",
+    "versionNumber": 65536
+  },
+  "projectSettings": {
+    "containers": {
+      "dashboardSettings": {
+        "parameters": [
+          {
+            "value": "",
+            "controlAddress": "/showDashboardOnStartup",
+            "enabled": false
+          }
+        ]
+      },
+      "customDefinitions": {
+      }
+    }
+  },
+  "dashboardManager": {
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  },
+  "parrots": {
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  },
+  "layout": {
+    "mainLayout": {
+      "type": 1,
+      "width": 1800,
+      "height": 1073,
+      "direction": 2,
+      "shifters": [
+        {
+          "type": 1,
+          "width": 1800,
+          "height": 1073,
+          "direction": 2,
+          "shifters": [
+            {
+              "type": 1,
+              "width": 1800,
+              "height": 585,
+              "direction": 1,
+              "shifters": [
+                {
+                  "type": 1,
+                  "width": 307,
+                  "height": 585,
+                  "direction": 2,
+                  "shifters": [
+                    {
+                      "type": 0,
+                      "width": 307,
+                      "height": 300,
+                      "currentContent": "Modules",
+                      "tabs": [
+                        {
+                          "name": "Modules"
+                        }
+                      ]
+                    },
+                    {
+                      "type": 0,
+                      "width": 307,
+                      "height": 279,
+                      "currentContent": "Custom Variables",
+                      "tabs": [
+                        {
+                          "name": "Custom Variables"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": 0,
+                  "width": 930,
+                  "height": 585,
+                  "currentContent": "State Machine",
+                  "tabs": [
+                    {
+                      "name": "State Machine"
+                    },
+                    {
+                      "name": "Dashboard"
+                    },
+                    {
+                      "name": "Module Router"
+                    },
+                    {
+                      "name": "Morpher"
+                    }
+                  ]
+                },
+                {
+                  "type": 0,
+                  "width": 551,
+                  "height": 585,
+                  "currentContent": "Inspector",
+                  "tabs": [
+                    {
+                      "name": "Inspector"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": 1,
+              "width": 1800,
+              "height": 482,
+              "direction": 1,
+              "shifters": [
+                {
+                  "type": 0,
+                  "width": 178,
+                  "height": 482,
+                  "currentContent": "Sequences",
+                  "tabs": [
+                    {
+                      "name": "Sequences"
+                    }
+                  ]
+                },
+                {
+                  "type": 0,
+                  "width": 648,
+                  "height": 482,
+                  "currentContent": "Sequence Editor",
+                  "tabs": [
+                    {
+                      "name": "Sequence Editor"
+                    }
+                  ]
+                },
+                {
+                  "type": 0,
+                  "width": 962,
+                  "height": 482,
+                  "currentContent": "Logger",
+                  "tabs": [
+                    {
+                      "name": "Help"
+                    },
+                    {
+                      "name": "Logger"
+                    },
+                    {
+                      "name": "Warnings"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "windows": null
+  },
+  "modules": {
+    "items": [
+      {
+        "parameters": [
+          {
+            "value": true,
+            "controlAddress": "/enabled"
+          },
+          {
+            "value": true,
+            "controlAddress": "/logIncoming"
+          },
+          {
+            "value": true,
+            "controlAddress": "/logOutgoing"
+          }
+        ],
+        "niceName": "HTTP",
+        "type": "HTTP",
+        "scripts": {
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "params": {
+          "parameters": [
+            {
+              "value": "http://192.168.1.27:5001",
+              "controlAddress": "/baseAddress"
+            },
+            {
+              "value": "JSON",
+              "controlAddress": "/protocol"
+            }
+          ],
+          "containers": {
+            "authentication": {
+              "parameters": [
+                {
+                  "value": false,
+                  "controlAddress": "/enabled"
+                }
+              ]
+            }
+          }
+        },
+        "templates": {
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "values": {
+          "parameters": [
+            {
+              "value": 30.0,
+              "controlAddress": "/duracao_rodada",
+              "type": "Float",
+              "niceName": "duracao_rodada",
+              "customizable": true,
+              "removable": true,
+              "description": "duracao_rodada",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": "https://randomuser.me/api/portraits/men/22.jpg",
+              "controlAddress": "/jogador1_foto",
+              "type": "String",
+              "niceName": "jogador1_foto",
+              "customizable": true,
+              "removable": true,
+              "description": "jogador1_foto",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": "Pedro Oliveira",
+              "controlAddress": "/jogador1_nome",
+              "type": "String",
+              "niceName": "jogador1_nome",
+              "customizable": true,
+              "removable": true,
+              "description": "jogador1_nome",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": 95,
+              "hexMode": false,
+              "controlAddress": "/jogador1_pontos",
+              "type": "Integer",
+              "niceName": "jogador1_pontos",
+              "customizable": true,
+              "removable": true,
+              "description": "jogador1_pontos",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": "https://randomuser.me/api/portraits/women/42.jpg",
+              "controlAddress": "/jogador2_foto",
+              "type": "String",
+              "niceName": "jogador2_foto",
+              "customizable": true,
+              "removable": true,
+              "description": "jogador2_foto",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": "Maria Silva",
+              "controlAddress": "/jogador2_nome",
+              "type": "String",
+              "niceName": "jogador2_nome",
+              "customizable": true,
+              "removable": true,
+              "description": "jogador2_nome",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": 85,
+              "hexMode": false,
+              "controlAddress": "/jogador2_pontos",
+              "type": "Integer",
+              "niceName": "jogador2_pontos",
+              "customizable": true,
+              "removable": true,
+              "description": "jogador2_pontos",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": "https://randomuser.me/api/portraits/women/56.jpg",
+              "controlAddress": "/jogador3_foto",
+              "type": "String",
+              "niceName": "jogador3_foto",
+              "customizable": true,
+              "removable": true,
+              "description": "jogador3_foto",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": "Mariana Alves",
+              "controlAddress": "/jogador3_nome",
+              "type": "String",
+              "niceName": "jogador3_nome",
+              "customizable": true,
+              "removable": true,
+              "description": "jogador3_nome",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": 78,
+              "hexMode": false,
+              "controlAddress": "/jogador3_pontos",
+              "type": "Integer",
+              "niceName": "jogador3_pontos",
+              "customizable": true,
+              "removable": true,
+              "description": "jogador3_pontos",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": "Quiz Game - Aguardando in\u00edcio da partida",
+              "controlAddress": "/mensagem",
+              "type": "String",
+              "niceName": "mensagem",
+              "customizable": true,
+              "removable": true,
+              "description": "mensagem",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": "apresentacao",
+              "controlAddress": "/status",
+              "type": "String",
+              "niceName": "status",
+              "customizable": true,
+              "removable": true,
+              "description": "status",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": "default",
+              "controlAddress": "/tema",
+              "type": "String",
+              "niceName": "tema",
+              "customizable": true,
+              "removable": true,
+              "description": "tema",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": 0,
+              "hexMode": false,
+              "controlAddress": "/total_partidas",
+              "type": "Integer",
+              "niceName": "total_partidas",
+              "customizable": true,
+              "removable": true,
+              "description": "total_partidas",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": 10,
+              "hexMode": false,
+              "controlAddress": "/total_rodadas",
+              "type": "Integer",
+              "niceName": "total_rodadas",
+              "customizable": true,
+              "removable": true,
+              "description": "total_rodadas",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": 1.743167454798854e9,
+              "controlAddress": "/ultima_atualizacao",
+              "type": "Float",
+              "niceName": "ultima_atualizacao",
+              "customizable": true,
+              "removable": true,
+              "description": "ultima_atualizacao",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": 1.743167454798862e9,
+              "controlAddress": "/ultima_partida_data",
+              "type": "Float",
+              "niceName": "ultima_partida_data",
+              "customizable": true,
+              "removable": true,
+              "description": "ultima_partida_data",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            }
+          ]
+        }
+      },
+      {
+        "niceName": "Resolume",
+        "type": "Resolume",
+        "scripts": {
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "params": {
+          "containers": {
+            "oscOutputs": {
+              "items": [
+                {
+                  "parameters": [
+                    {
+                      "value": "127.0.0.1",
+                      "controlAddress": "/remoteHost"
+                    },
+                    {
+                      "value": 7000,
+                      "hexMode": false,
+                      "controlAddress": "/remotePort"
+                    }
+                  ],
+                  "niceName": "OSC Output",
+                  "type": "BaseItem"
+                }
+              ],
+              "viewOffset": [
+                0,
+                0
+              ],
+              "viewZoom": 1.0
+            }
+          }
+        },
+        "templates": {
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        }
+      },
+      {
+        "niceName": "Serial",
+        "type": "Serial",
+        "scripts": {
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "params": {
+          "parameters": [
+            {
+              "value": "Colon (:) separated",
+              "controlAddress": "/messageStructure"
+            },
+            {
+              "value": "|",
+              "controlAddress": "/customSeparator"
+            },
+            {
+              "value": "",
+              "controlAddress": "/port"
+            }
+          ],
+          "containers": {
+            "pass_through": {
+            }
+          }
+        },
+        "templates": {
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "values": {
+          "parameters": [
+            {
+              "value": 0.0,
+              "controlAddress": "/j1b",
+              "type": "Float",
+              "niceName": "j1b",
+              "customizable": true,
+              "removable": true,
+              "description": "j1b",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": 0.0,
+              "controlAddress": "/j1c",
+              "type": "Float",
+              "niceName": "j1c",
+              "customizable": true,
+              "removable": true,
+              "description": "j1c",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": 0.0,
+              "controlAddress": "/j1a",
+              "type": "Float",
+              "niceName": "j1a",
+              "customizable": true,
+              "removable": true,
+              "description": "j1a",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": [
+                21.0,
+                46.0
+              ],
+              "controlAddress": "/etsJul29201912",
+              "type": "Point2D",
+              "niceName": "ets Jul 29 2019 12",
+              "customizable": true,
+              "removable": true,
+              "description": "ets Jul 29 2019 12",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": [
+                0.0,
+                0.0
+              ],
+              "controlAddress": "/rst",
+              "type": "Point2D",
+              "niceName": "rst",
+              "customizable": true,
+              "removable": true,
+              "description": "rst",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": [
+                0.0,
+                0.0
+              ],
+              "controlAddress": "/configsip",
+              "type": "Point2D",
+              "niceName": "configsip",
+              "customizable": true,
+              "removable": true,
+              "description": "configsip",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": "",
+              "controlAddress": "/clk_drv",
+              "type": "String",
+              "niceName": "clk_drv",
+              "customizable": true,
+              "removable": true,
+              "description": "clk_drv",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": "",
+              "controlAddress": "/mode",
+              "type": "String",
+              "niceName": "mode",
+              "customizable": true,
+              "removable": true,
+              "description": "mode",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": [
+                0.0,
+                3524.0
+              ],
+              "controlAddress": "/load",
+              "type": "Point2D",
+              "niceName": "load",
+              "customizable": true,
+              "removable": true,
+              "description": "load",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "controlAddress": "/entry0x400805b8",
+              "type": "Trigger",
+              "niceName": "entry 0x400805b8",
+              "customizable": true,
+              "removable": true,
+              "description": "entry 0x400805b8",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "controlAddress": "/esp32",
+              "type": "Trigger",
+              "niceName": "ESP32",
+              "customizable": true,
+              "removable": true,
+              "description": "ESP32",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "controlAddress": "/master",
+              "type": "Trigger",
+              "niceName": "MASTER",
+              "customizable": true,
+              "removable": true,
+              "description": "MASTER",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "controlAddress": "/esp_now",
+              "type": "Trigger",
+              "niceName": "ESP-NOW",
+              "customizable": true,
+              "removable": true,
+              "description": "ESP-NOW",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "controlAddress": "/conecte",
+              "type": "Trigger",
+              "niceName": "Conecte",
+              "customizable": true,
+              "removable": true,
+              "description": "Conecte",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "controlAddress": "/computador",
+              "type": "Trigger",
+              "niceName": "computador",
+              "customizable": true,
+              "removable": true,
+              "description": "computador",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "controlAddress": "/viaUSB",
+              "type": "Trigger",
+              "niceName": "via USB",
+              "customizable": true,
+              "removable": true,
+              "description": "via USB",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "controlAddress": "/enderecoMAC",
+              "type": "Trigger",
+              "niceName": "EnderecoMAC",
+              "customizable": true,
+              "removable": true,
+              "description": "EnderecoMAC",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "controlAddress": "/da",
+              "type": "Trigger",
+              "niceName": "da",
+              "customizable": true,
+              "removable": true,
+              "description": "da",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": "",
+              "controlAddress": "/espMaster",
+              "type": "String",
+              "niceName": "ESP Master",
+              "customizable": true,
+              "removable": true,
+              "description": "ESP Master",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": "",
+              "controlAddress": "/00",
+              "type": "String",
+              "niceName": "00",
+              "customizable": true,
+              "removable": true,
+              "description": "00",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "controlAddress": "/inicializado",
+              "type": "Trigger",
+              "niceName": "inicializado",
+              "customizable": true,
+              "removable": true,
+              "description": "inicializado",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "controlAddress": "/com",
+              "type": "Trigger",
+              "niceName": "com",
+              "customizable": true,
+              "removable": true,
+              "description": "com",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "controlAddress": "/sucesso",
+              "type": "Trigger",
+              "niceName": "sucesso.",
+              "customizable": true,
+              "removable": true,
+              "description": "sucesso.",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "controlAddress": "/aguardando",
+              "type": "Trigger",
+              "niceName": "Aguardando",
+              "customizable": true,
+              "removable": true,
+              "description": "Aguardando",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "controlAddress": "/conexes",
+              "type": "Trigger",
+              "niceName": "conex\u00f5es",
+              "customizable": true,
+              "removable": true,
+              "description": "conex\u00f5es",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "controlAddress": "/dos",
+              "type": "Trigger",
+              "niceName": "dos",
+              "customizable": true,
+              "removable": true,
+              "description": "dos",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "controlAddress": "/clientes",
+              "type": "Trigger",
+              "niceName": "clientes...",
+              "customizable": true,
+              "removable": true,
+              "description": "clientes...",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": 0.0,
+              "controlAddress": "/j2a",
+              "type": "Float",
+              "niceName": "j2a",
+              "customizable": true,
+              "removable": true,
+              "description": "j2a",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": 0.0,
+              "controlAddress": "/j2b",
+              "type": "Float",
+              "niceName": "j2b",
+              "customizable": true,
+              "removable": true,
+              "description": "j2b",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": 0.0,
+              "controlAddress": "/j2c",
+              "type": "Float",
+              "niceName": "j2c",
+              "customizable": true,
+              "removable": true,
+              "description": "j2c",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": 0.0,
+              "controlAddress": "/j3a",
+              "type": "Float",
+              "niceName": "j3a",
+              "customizable": true,
+              "removable": true,
+              "description": "j3a",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": 0.0,
+              "controlAddress": "/j3b",
+              "type": "Float",
+              "niceName": "j3b",
+              "customizable": true,
+              "removable": true,
+              "description": "j3b",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            },
+            {
+              "value": 0.0,
+              "controlAddress": "/j3c",
+              "type": "Float",
+              "niceName": "j3c",
+              "customizable": true,
+              "removable": true,
+              "description": "j3c",
+              "hideInEditor": false,
+              "feedbackOnly": false
+            }
+          ]
+        },
+        "portID": ""
+      }
+    ],
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  },
+  "customVariables": {
+    "items": [
+      {
+        "niceName": "Apresentacao",
+        "type": "CVGroup",
+        "params": {
+          "parameters": [
+            {
+              "value": "Free",
+              "controlAddress": "/controlMode"
+            }
+          ]
+        },
+        "variables": {
+          "items": [
+            {
+              "parameters": [
+                {
+                  "value": 30.0,
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "/modules/http/values/duracao_rodada",
+                    "controlAddress": "/reference"
+                  },
+                  "controlAddress": "/duracaoRodada",
+                  "feedbackOnly": false,
+                  "type": "Float",
+                  "niceName": "duracaoRodada",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type Float",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "duracaoRodada",
+              "editorIsCollapsed": true,
+              "type": "Float Parameter"
+            },
+            {
+              "parameters": [
+                {
+                  "value": "apresentacao",
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "/modules/http/values/status",
+                    "controlAddress": "/reference"
+                  },
+                  "controlAddress": "/status",
+                  "feedbackOnly": false,
+                  "type": "String",
+                  "niceName": "status",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type String",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "status",
+              "editorIsCollapsed": true,
+              "type": "String Parameter"
+            },
+            {
+              "parameters": [
+                {
+                  "value": "Quiz Game - Aguardando in\u00edcio da partida",
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "/modules/http/values/mensagem",
+                    "controlAddress": "/reference"
+                  },
+                  "controlAddress": "/mensagem",
+                  "feedbackOnly": false,
+                  "type": "String",
+                  "niceName": "Mensagem",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type String",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "Mensagem",
+              "editorIsCollapsed": true,
+              "type": "String Parameter"
+            },
+            {
+              "parameters": [
+                {
+                  "value": "default",
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "/modules/http/values/tema",
+                    "controlAddress": "/reference"
+                  },
+                  "controlAddress": "/tema",
+                  "feedbackOnly": false,
+                  "type": "String",
+                  "niceName": "Tema",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type String",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "Tema",
+              "editorIsCollapsed": true,
+              "type": "String Parameter"
+            },
+            {
+              "parameters": [
+                {
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "/modules/http/values/total_partidas",
+                    "controlAddress": "/reference"
+                  },
+                  "hexMode": false,
+                  "controlAddress": "/totalPartidas",
+                  "feedbackOnly": false,
+                  "type": "Integer",
+                  "niceName": "totalPartidas",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type Integer",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "totalPartidas",
+              "editorIsCollapsed": true,
+              "type": "Int Parameter"
+            },
+            {
+              "parameters": [
+                {
+                  "value": 10,
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "/modules/http/values/total_rodadas",
+                    "controlAddress": "/reference"
+                  },
+                  "hexMode": false,
+                  "controlAddress": "/totalRodadas",
+                  "feedbackOnly": false,
+                  "type": "Integer",
+                  "niceName": "totalRodadas",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type Integer",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "totalRodadas",
+              "editorIsCollapsed": true,
+              "type": "Int Parameter"
+            },
+            {
+              "parameters": [
+                {
+                  "value": "1743167488.000",
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "/modules/http/values/ultima_atualizacao",
+                    "controlAddress": "/reference"
+                  },
+                  "controlAddress": "/ultimaAtualizacao",
+                  "feedbackOnly": false,
+                  "type": "String",
+                  "niceName": "ultimaAtualizacao",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type String",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "ultimaAtualizacao",
+              "editorIsCollapsed": true,
+              "type": "String Parameter"
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "presets": {
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        }
+      },
+      {
+        "niceName": "Group",
+        "type": "CVGroup",
+        "params": {
+        },
+        "variables": {
+          "items": [
+            {
+              "parameters": [
+                {
+                  "value": "Em que ano o homem pisou na lua pela primeira vez?",
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "",
+                    "ghostValue": "/modules/http/values/texto",
+                    "controlAddress": "/reference"
+                  },
+                  "controlAddress": "/pergunta",
+                  "feedbackOnly": false,
+                  "type": "String",
+                  "niceName": "Pergunta",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type String",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "Pergunta",
+              "editorIsCollapsed": true,
+              "type": "String Parameter"
+            },
+            {
+              "parameters": [
+                {
+                  "value": 30.0,
+                  "controlAddress": "/tempoRestante",
+                  "feedbackOnly": false,
+                  "type": "Float",
+                  "niceName": "tempoRestante",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type Float",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "tempoRestante",
+              "editorIsCollapsed": true,
+              "type": "Float Parameter"
+            },
+            {
+              "parameters": [
+                {
+                  "value": 30.0,
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "/sequences/tempoDeResposta/totalTime",
+                    "controlAddress": "/reference"
+                  },
+                  "controlAddress": "/duracaoRodada",
+                  "feedbackOnly": false,
+                  "type": "Float",
+                  "niceName": "duracaoRodada",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type Float",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "duracaoRodada",
+              "editorIsCollapsed": true,
+              "type": "Float Parameter"
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "presets": {
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        }
+      },
+      {
+        "niceName": "Jogador 1",
+        "type": "CVGroup",
+        "params": {
+        },
+        "variables": {
+          "items": [
+            {
+              "parameters": [
+                {
+                  "value": 1,
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "",
+                    "ghostValue": "/modules/http/values/participantes/0/id",
+                    "controlAddress": "/reference"
+                  },
+                  "hexMode": false,
+                  "controlAddress": "/id",
+                  "feedbackOnly": false,
+                  "type": "Integer",
+                  "niceName": "id",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type Integer",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "id",
+              "editorIsCollapsed": true,
+              "type": "Int Parameter"
+            },
+            {
+              "parameters": [
+                {
+                  "value": "Maria Silva",
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "",
+                    "ghostValue": "/modules/http/values/participantes/0/nome",
+                    "controlAddress": "/reference"
+                  },
+                  "controlAddress": "/nome",
+                  "feedbackOnly": false,
+                  "type": "String",
+                  "niceName": "nome",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type String",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "nome",
+              "editorIsCollapsed": true,
+              "type": "String Parameter"
+            },
+            {
+              "parameters": [
+                {
+                  "value": 0,
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "",
+                    "ghostValue": "/modules/http/values/classificacao/0/pontuacao",
+                    "controlAddress": "/reference"
+                  },
+                  "hexMode": false,
+                  "controlAddress": "/pontos",
+                  "feedbackOnly": false,
+                  "type": "Integer",
+                  "niceName": "pontos",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type Integer",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "pontos",
+              "editorIsCollapsed": true,
+              "type": "Int Parameter"
+            },
+            {
+              "parameters": [
+                {
+                  "value": "https://randomuser.me/api/portraits/women/42.jpg",
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "",
+                    "ghostValue": "/modules/http/values/participantes/0/foto",
+                    "controlAddress": "/reference"
+                  },
+                  "controlAddress": "/foto",
+                  "feedbackOnly": false,
+                  "type": "String",
+                  "niceName": "foto",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type String",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "foto",
+              "editorIsCollapsed": true,
+              "type": "String Parameter"
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "presets": {
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        }
+      },
+      {
+        "niceName": "Ranking > 1",
+        "type": "CVGroup",
+        "params": {
+        },
+        "variables": {
+          "items": [
+            {
+              "parameters": [
+                {
+                  "value": "Pedro Oliveira",
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "/modules/http/values/jogador1_nome",
+                    "controlAddress": "/reference"
+                  },
+                  "controlAddress": "/nome",
+                  "feedbackOnly": false,
+                  "type": "String",
+                  "niceName": "nome",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type String",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "nome",
+              "editorIsCollapsed": true,
+              "type": "String Parameter"
+            },
+            {
+              "parameters": [
+                {
+                  "value": 95,
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "/modules/http/values/jogador1_pontos",
+                    "controlAddress": "/reference"
+                  },
+                  "hexMode": false,
+                  "controlAddress": "/pontos",
+                  "feedbackOnly": false,
+                  "type": "Integer",
+                  "niceName": "pontos",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type Integer",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "pontos",
+              "editorIsCollapsed": true,
+              "type": "Int Parameter"
+            },
+            {
+              "parameters": [
+                {
+                  "value": "https://randomuser.me/api/portraits/men/22.jpg",
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "/modules/http/values/jogador1_foto",
+                    "controlAddress": "/reference"
+                  },
+                  "controlAddress": "/foto",
+                  "feedbackOnly": false,
+                  "type": "String",
+                  "niceName": "foto",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type String",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "foto",
+              "editorIsCollapsed": true,
+              "type": "String Parameter"
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "presets": {
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        }
+      },
+      {
+        "niceName": "Ranking > 2",
+        "type": "CVGroup",
+        "params": {
+        },
+        "variables": {
+          "items": [
+            {
+              "parameters": [
+                {
+                  "value": "Maria Silva",
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "/modules/http/values/jogador2_nome",
+                    "controlAddress": "/reference"
+                  },
+                  "controlAddress": "/nome",
+                  "feedbackOnly": false,
+                  "type": "String",
+                  "niceName": "nome",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type String",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "nome",
+              "editorIsCollapsed": true,
+              "type": "String Parameter"
+            },
+            {
+              "parameters": [
+                {
+                  "value": 85,
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "/modules/http/values/jogador2_pontos",
+                    "controlAddress": "/reference"
+                  },
+                  "hexMode": false,
+                  "controlAddress": "/pontos",
+                  "feedbackOnly": false,
+                  "type": "Integer",
+                  "niceName": "pontos",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type Integer",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "pontos",
+              "editorIsCollapsed": true,
+              "type": "Int Parameter"
+            },
+            {
+              "parameters": [
+                {
+                  "value": "https://randomuser.me/api/portraits/women/42.jpg",
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "/modules/http/values/jogador2_foto",
+                    "controlAddress": "/reference"
+                  },
+                  "controlAddress": "/foto",
+                  "feedbackOnly": false,
+                  "type": "String",
+                  "niceName": "foto",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type String",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "foto",
+              "editorIsCollapsed": true,
+              "type": "String Parameter"
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "presets": {
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        }
+      },
+      {
+        "niceName": "Ranking > 3",
+        "type": "CVGroup",
+        "params": {
+        },
+        "variables": {
+          "items": [
+            {
+              "parameters": [
+                {
+                  "value": "Mariana Alves",
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "/modules/http/values/jogador3_nome",
+                    "controlAddress": "/reference"
+                  },
+                  "controlAddress": "/nome",
+                  "feedbackOnly": false,
+                  "type": "String",
+                  "niceName": "nome",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type String",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "nome",
+              "editorIsCollapsed": true,
+              "type": "String Parameter"
+            },
+            {
+              "parameters": [
+                {
+                  "value": 78,
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "/modules/http/values/jogador3_pontos",
+                    "controlAddress": "/reference"
+                  },
+                  "hexMode": false,
+                  "controlAddress": "/pontos",
+                  "feedbackOnly": false,
+                  "type": "Integer",
+                  "niceName": "pontos",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type Integer",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "pontos",
+              "editorIsCollapsed": true,
+              "type": "Int Parameter"
+            },
+            {
+              "parameters": [
+                {
+                  "value": "https://randomuser.me/api/portraits/women/56.jpg",
+                  "controlMode": 2,
+                  "reference": {
+                    "value": "/modules/http/values/jogador3_foto",
+                    "controlAddress": "/reference"
+                  },
+                  "controlAddress": "/foto",
+                  "feedbackOnly": false,
+                  "type": "String",
+                  "niceName": "foto",
+                  "customizable": true,
+                  "removable": false,
+                  "description": "Custom control of type String",
+                  "hideInEditor": false
+                }
+              ],
+              "niceName": "foto",
+              "editorIsCollapsed": true,
+              "type": "String Parameter"
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "presets": {
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        }
+      }
+    ],
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  },
+  "states": {
+    "items": [
+      {
+        "parameters": [
+          {
+            "value": [
+              -74.0,
+              -222.0
+            ],
+            "controlAddress": "/viewUIPosition"
+          },
+          {
+            "value": [
+              284.0,
+              346.0
+            ],
+            "controlAddress": "/viewUISize"
+          },
+          {
+            "value": true,
+            "controlAddress": "/active"
+          }
+        ],
+        "niceName": "State",
+        "type": "State",
+        "processors": {
+          "items": [
+            {
+              "niceName": "Enviar Resposta",
+              "editorIsCollapsed": true,
+              "type": "Action",
+              "conditions": {
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": "/modules/serial/values/j1a",
+                        "controlAddress": "/inputValue"
+                      }
+                    ],
+                    "niceName": "From Input Value",
+                    "type": "From Input Value",
+                    "comparator": {
+                      "parameters": [
+                        {
+                          "value": 1.0,
+                          "controlAddress": "/reference"
+                        }
+                      ],
+                      "hideInEditor": true
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequences": {
+                "parameters": [
+                  {
+                    "value": false,
+                    "controlAddress": "/cancelDelaysOnTrigger"
+                  }
+                ],
+                "items": [
+                  {
+                    "niceName": "Consequence",
+                    "type": "Consequence",
+                    "commandModule": "http",
+                    "commandPath": "",
+                    "commandType": "Request",
+                    "command": {
+                      "parameters": [
+                        {
+                          "value": "POST",
+                          "controlAddress": "/method"
+                        },
+                        {
+                          "value": "/api/enviar_resposta",
+                          "controlAddress": "/address"
+                        },
+                        {
+                          "value": "",
+                          "controlAddress": "/extraHeaders"
+                        }
+                      ],
+                      "paramLinks": {
+                      },
+                      "argManager": {
+                        "items": [
+                          {
+                            "parameters": [
+                              {
+                                "value": 1,
+                                "hexMode": false,
+                                "controlAddress": "/#1"
+                              }
+                            ],
+                            "niceName": "jogador_id",
+                            "type": "Integer",
+                            "param": {
+                              "value": 1,
+                              "hexMode": false,
+                              "controlAddress": "/states/state/processors/enviarResposta/consequencesTRUE/consequence/command/arguments/jogador_id/#1"
+                            }
+                          },
+                          {
+                            "parameters": [
+                              {
+                                "value": "A",
+                                "controlAddress": "/#1"
+                              }
+                            ],
+                            "niceName": "opcao",
+                            "type": "String",
+                            "param": {
+                              "value": "A",
+                              "controlAddress": "/states/state/processors/enviarResposta/consequencesTRUE/consequence/command/arguments/opcao/#1"
+                            }
+                          },
+                          {
+                            "parameters": [
+                              {
+                                "value": 0.0,
+                                "controlAddress": "/#1"
+                              }
+                            ],
+                            "niceName": "tempo",
+                            "type": "Float",
+                            "param": {
+                              "value": 0.0,
+                              "controlAddress": "/states/state/processors/enviarResposta/consequencesTRUE/consequence/command/arguments/tempo/#1"
+                            }
+                          }
+                        ],
+                        "viewOffset": [
+                          0,
+                          0
+                        ],
+                        "viewZoom": 1.0
+                      }
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequencesOff": {
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              }
+            },
+            {
+              "niceName": "Enviar Resposta 1",
+              "editorIsCollapsed": true,
+              "type": "Action",
+              "conditions": {
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": "/modules/serial/values/j1b",
+                        "controlAddress": "/inputValue"
+                      }
+                    ],
+                    "niceName": "From Input Value",
+                    "type": "From Input Value",
+                    "comparator": {
+                      "parameters": [
+                        {
+                          "value": 1.0,
+                          "controlAddress": "/reference"
+                        }
+                      ],
+                      "hideInEditor": true
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequences": {
+                "parameters": [
+                  {
+                    "value": false,
+                    "controlAddress": "/cancelDelaysOnTrigger"
+                  }
+                ],
+                "items": [
+                  {
+                    "niceName": "Consequence",
+                    "type": "Consequence",
+                    "commandModule": "http",
+                    "commandPath": "",
+                    "commandType": "Request",
+                    "command": {
+                      "parameters": [
+                        {
+                          "value": "POST",
+                          "controlAddress": "/method"
+                        },
+                        {
+                          "value": "/api/enviar_resposta",
+                          "controlAddress": "/address"
+                        },
+                        {
+                          "value": "",
+                          "controlAddress": "/extraHeaders"
+                        }
+                      ],
+                      "paramLinks": {
+                      },
+                      "argManager": {
+                        "items": [
+                          {
+                            "parameters": [
+                              {
+                                "value": 1,
+                                "hexMode": false,
+                                "controlAddress": "/#1"
+                              }
+                            ],
+                            "niceName": "jogador_id",
+                            "type": "Integer",
+                            "param": {
+                              "value": 1,
+                              "hexMode": false,
+                              "controlAddress": "/states/state/processors/enviarResposta1/consequencesTRUE/consequence/command/arguments/jogador_id/#1"
+                            }
+                          },
+                          {
+                            "parameters": [
+                              {
+                                "value": "B",
+                                "controlAddress": "/#1"
+                              }
+                            ],
+                            "niceName": "opcao",
+                            "type": "String",
+                            "param": {
+                              "value": "B",
+                              "controlAddress": "/states/state/processors/enviarResposta1/consequencesTRUE/consequence/command/arguments/opcao/#1"
+                            }
+                          },
+                          {
+                            "parameters": [
+                              {
+                                "value": 0.0,
+                                "controlAddress": "/#1"
+                              }
+                            ],
+                            "niceName": "tempo",
+                            "type": "Float",
+                            "param": {
+                              "value": 0.0,
+                              "controlAddress": "/states/state/processors/enviarResposta1/consequencesTRUE/consequence/command/arguments/tempo/#1"
+                            }
+                          }
+                        ],
+                        "viewOffset": [
+                          0,
+                          0
+                        ],
+                        "viewZoom": 1.0
+                      }
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequencesOff": {
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              }
+            },
+            {
+              "niceName": "Enviar Resposta 2",
+              "editorIsCollapsed": true,
+              "type": "Action",
+              "conditions": {
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": "/modules/serial/values/j1c",
+                        "controlAddress": "/inputValue"
+                      }
+                    ],
+                    "niceName": "From Input Value",
+                    "type": "From Input Value",
+                    "comparator": {
+                      "parameters": [
+                        {
+                          "value": 1.0,
+                          "controlAddress": "/reference"
+                        }
+                      ],
+                      "hideInEditor": true
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequences": {
+                "parameters": [
+                  {
+                    "value": false,
+                    "controlAddress": "/cancelDelaysOnTrigger"
+                  }
+                ],
+                "items": [
+                  {
+                    "niceName": "Consequence",
+                    "type": "Consequence",
+                    "commandModule": "http",
+                    "commandPath": "",
+                    "commandType": "Request",
+                    "command": {
+                      "parameters": [
+                        {
+                          "value": "POST",
+                          "controlAddress": "/method"
+                        },
+                        {
+                          "value": "/api/enviar_resposta",
+                          "controlAddress": "/address"
+                        },
+                        {
+                          "value": "",
+                          "controlAddress": "/extraHeaders"
+                        }
+                      ],
+                      "paramLinks": {
+                      },
+                      "argManager": {
+                        "items": [
+                          {
+                            "parameters": [
+                              {
+                                "value": 1,
+                                "hexMode": false,
+                                "controlAddress": "/#1"
+                              }
+                            ],
+                            "niceName": "jogador_id",
+                            "type": "Integer",
+                            "param": {
+                              "value": 1,
+                              "hexMode": false,
+                              "controlAddress": "/states/state/processors/enviarResposta2/consequencesTRUE/consequence/command/arguments/jogador_id/#1"
+                            }
+                          },
+                          {
+                            "parameters": [
+                              {
+                                "value": "C",
+                                "controlAddress": "/#1"
+                              }
+                            ],
+                            "niceName": "opcao",
+                            "type": "String",
+                            "param": {
+                              "value": "C",
+                              "controlAddress": "/states/state/processors/enviarResposta2/consequencesTRUE/consequence/command/arguments/opcao/#1"
+                            }
+                          },
+                          {
+                            "parameters": [
+                              {
+                                "value": 0.0,
+                                "controlAddress": "/#1"
+                              }
+                            ],
+                            "niceName": "tempo",
+                            "type": "Float",
+                            "param": {
+                              "value": 0.0,
+                              "controlAddress": "/states/state/processors/enviarResposta2/consequencesTRUE/consequence/command/arguments/tempo/#1"
+                            }
+                          }
+                        ],
+                        "viewOffset": [
+                          0,
+                          0
+                        ],
+                        "viewZoom": 1.0
+                      }
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequencesOff": {
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              }
+            },
+            {
+              "niceName": "iniciar jogo",
+              "editorIsCollapsed": true,
+              "type": "Action",
+              "conditions": {
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": "",
+                        "controlAddress": "/inputValue"
+                      }
+                    ],
+                    "niceName": "From Input Value",
+                    "type": "From Input Value"
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequences": {
+                "parameters": [
+                  {
+                    "value": false,
+                    "controlAddress": "/cancelDelaysOnTrigger"
+                  }
+                ],
+                "items": [
+                  {
+                    "niceName": "Consequence",
+                    "type": "Consequence",
+                    "commandModule": "http",
+                    "commandPath": "",
+                    "commandType": "Request",
+                    "command": {
+                      "parameters": [
+                        {
+                          "value": "POST",
+                          "controlAddress": "/method"
+                        },
+                        {
+                          "value": "/api/iniciar",
+                          "controlAddress": "/address"
+                        }
+                      ],
+                      "paramLinks": {
+                      },
+                      "argManager": {
+                        "viewOffset": [
+                          0,
+                          0
+                        ],
+                        "viewZoom": 1.0
+                      }
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequencesOff": {
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              }
+            },
+            {
+              "niceName": "proxima rodada",
+              "editorIsCollapsed": true,
+              "type": "Action",
+              "conditions": {
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": "",
+                        "controlAddress": "/inputValue"
+                      }
+                    ],
+                    "niceName": "From Input Value",
+                    "type": "From Input Value"
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequences": {
+                "parameters": [
+                  {
+                    "value": false,
+                    "controlAddress": "/cancelDelaysOnTrigger"
+                  }
+                ],
+                "items": [
+                  {
+                    "niceName": "Consequence",
+                    "type": "Consequence",
+                    "commandModule": "http",
+                    "commandPath": "",
+                    "commandType": "Request",
+                    "command": {
+                      "parameters": [
+                        {
+                          "value": "POST",
+                          "controlAddress": "/method"
+                        },
+                        {
+                          "value": "/api/proxima_rodada",
+                          "controlAddress": "/address"
+                        }
+                      ],
+                      "paramLinks": {
+                      },
+                      "argManager": {
+                        "viewOffset": [
+                          0,
+                          0
+                        ],
+                        "viewZoom": 1.0
+                      }
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequencesOff": {
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              }
+            },
+            {
+              "niceName": "perguntaAtual",
+              "editorIsCollapsed": true,
+              "type": "Action",
+              "conditions": {
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": "",
+                        "controlAddress": "/inputValue"
+                      }
+                    ],
+                    "niceName": "From Input Value",
+                    "type": "From Input Value"
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequences": {
+                "parameters": [
+                  {
+                    "value": false,
+                    "controlAddress": "/cancelDelaysOnTrigger"
+                  }
+                ],
+                "items": [
+                  {
+                    "niceName": "Consequence",
+                    "type": "Consequence",
+                    "commandModule": "http",
+                    "commandPath": "",
+                    "commandType": "Request",
+                    "command": {
+                      "parameters": [
+                        {
+                          "value": "/api/pergunta_atual",
+                          "controlAddress": "/address"
+                        }
+                      ],
+                      "paramLinks": {
+                      },
+                      "argManager": {
+                        "viewOffset": [
+                          0,
+                          0
+                        ],
+                        "viewZoom": 1.0
+                      }
+                    }
+                  },
+                  {
+                    "niceName": "Consequence 2",
+                    "type": "Consequence",
+                    "commandModule": "customVariables",
+                    "commandPath": "",
+                    "commandType": "Set Value",
+                    "command": {
+                      "parameters": [
+                        {
+                          "value": "/group/pergunta",
+                          "controlAddress": "/target"
+                        },
+                        {
+                          "value": "All",
+                          "controlAddress": "/component"
+                        },
+                        {
+                          "value": "Equals",
+                          "controlAddress": "/operator"
+                        },
+                        {
+                          "value": "Em que ano o homem pisou na lua pela primeira vez?",
+                          "controlMode": 2,
+                          "reference": {
+                            "value": "/customVariables/customVariables/values/group/pergunta",
+                            "controlAddress": "/reference"
+                          },
+                          "controlAddress": "/value"
+                        }
+                      ],
+                      "paramLinks": {
+                      }
+                    }
+                  },
+                  {
+                    "niceName": "Consequence 3",
+                    "type": "Consequence",
+                    "commandModule": "resolume",
+                    "commandPath": "",
+                    "commandType": "Custom Message",
+                    "command": {
+                      "parameters": [
+                        {
+                          "value": "/composition/layers/2/clips/4/video/source/blocktextgenerator/text/params/lines",
+                          "controlAddress": "/address"
+                        }
+                      ],
+                      "paramLinks": {
+                      },
+                      "argManager": {
+                        "items": [
+                          {
+                            "parameters": [
+                              {
+                                "value": "Em que ano o homem pisou na lua pela primeira vez?",
+                                "controlMode": 2,
+                                "reference": {
+                                  "value": "/customVariables/customVariables/values/group/pergunta",
+                                  "controlAddress": "/reference"
+                                },
+                                "controlAddress": "/#1"
+                              }
+                            ],
+                            "niceName": "#1",
+                            "type": "String",
+                            "param": {
+                              "value": "Em que ano o homem pisou na lua pela primeira vez?",
+                              "controlMode": 2,
+                              "reference": {
+                                "value": "/customVariables/customVariables/values/group/pergunta",
+                                "controlAddress": "/reference"
+                              },
+                              "controlAddress": "/states/state/processors/perguntaAtual/consequencesTRUE/consequence3/command/arguments/#1/#1"
+                            }
+                          }
+                        ],
+                        "viewOffset": [
+                          0,
+                          0
+                        ],
+                        "viewZoom": 1.0
+                      }
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequencesOff": {
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              }
+            },
+            {
+              "niceName": "iniciarTimer",
+              "editorIsCollapsed": true,
+              "type": "Action",
+              "conditions": {
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": "",
+                        "controlAddress": "/inputValue"
+                      }
+                    ],
+                    "niceName": "From Input Value",
+                    "type": "From Input Value"
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequences": {
+                "parameters": [
+                  {
+                    "value": false,
+                    "controlAddress": "/cancelDelaysOnTrigger"
+                  }
+                ],
+                "items": [
+                  {
+                    "niceName": "Consequence",
+                    "type": "Consequence",
+                    "commandModule": "http",
+                    "commandPath": "",
+                    "commandType": "Request",
+                    "command": {
+                      "parameters": [
+                        {
+                          "value": "POST",
+                          "controlAddress": "/method"
+                        },
+                        {
+                          "value": "/api/iniciar_timer",
+                          "controlAddress": "/address"
+                        },
+                        {
+                          "value": "",
+                          "controlAddress": "/extraHeaders"
+                        }
+                      ],
+                      "paramLinks": {
+                      },
+                      "argManager": {
+                        "items": [
+                          {
+                            "parameters": [
+                              {
+                                "value": 30.0,
+                                "controlMode": 2,
+                                "reference": {
+                                  "value": "/customVariables/group/variables/duracaoRodada/duracaoRodada",
+                                  "controlAddress": "/reference"
+                                },
+                                "controlAddress": "/#1"
+                              }
+                            ],
+                            "niceName": "duracao",
+                            "type": "Float",
+                            "param": {
+                              "value": 30.0,
+                              "controlMode": 2,
+                              "reference": {
+                                "value": "/customVariables/group/variables/duracaoRodada/duracaoRodada",
+                                "controlAddress": "/reference"
+                              },
+                              "controlAddress": "/states/state/processors/iniciarTimer/consequencesTRUE/consequence/command/arguments/duracao/#1"
+                            }
+                          }
+                        ],
+                        "viewOffset": [
+                          0,
+                          0
+                        ],
+                        "viewZoom": 1.0
+                      }
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequencesOff": {
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              }
+            },
+            {
+              "niceName": "verTempoRestante",
+              "editorIsCollapsed": true,
+              "type": "Action",
+              "conditions": {
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": "",
+                        "controlAddress": "/inputValue"
+                      }
+                    ],
+                    "niceName": "From Input Value",
+                    "type": "From Input Value"
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequences": {
+                "parameters": [
+                  {
+                    "value": false,
+                    "controlAddress": "/cancelDelaysOnTrigger"
+                  }
+                ],
+                "items": [
+                  {
+                    "niceName": "Consequence",
+                    "type": "Consequence",
+                    "commandModule": "http",
+                    "commandPath": "",
+                    "commandType": "Request",
+                    "command": {
+                      "parameters": [
+                        {
+                          "value": "/api/tempo_restante",
+                          "controlAddress": "/address"
+                        }
+                      ],
+                      "paramLinks": {
+                      },
+                      "argManager": {
+                        "viewOffset": [
+                          0,
+                          0
+                        ],
+                        "viewZoom": 1.0
+                      }
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequencesOff": {
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              }
+            },
+            {
+              "niceName": "CancelarTimer",
+              "editorIsCollapsed": true,
+              "type": "Action",
+              "conditions": {
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": "",
+                        "controlAddress": "/inputValue"
+                      }
+                    ],
+                    "niceName": "From Input Value",
+                    "type": "From Input Value"
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequences": {
+                "parameters": [
+                  {
+                    "value": false,
+                    "controlAddress": "/cancelDelaysOnTrigger"
+                  }
+                ],
+                "items": [
+                  {
+                    "niceName": "Consequence",
+                    "type": "Consequence",
+                    "commandModule": "http",
+                    "commandPath": "",
+                    "commandType": "Request",
+                    "command": {
+                      "parameters": [
+                        {
+                          "value": "POST",
+                          "controlAddress": "/method"
+                        },
+                        {
+                          "value": "/api/cancelar_timer",
+                          "controlAddress": "/address"
+                        }
+                      ],
+                      "paramLinks": {
+                      },
+                      "argManager": {
+                        "viewOffset": [
+                          0,
+                          0
+                        ],
+                        "viewZoom": 1.0
+                      }
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequencesOff": {
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              }
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        }
+      },
+      {
+        "parameters": [
+          {
+            "value": false,
+            "controlAddress": "/miniMode"
+          },
+          {
+            "value": [
+              -428.0,
+              -222.0
+            ],
+            "controlAddress": "/viewUIPosition"
+          },
+          {
+            "value": true,
+            "controlAddress": "/active"
+          }
+        ],
+        "niceName": "State 1",
+        "type": "State",
+        "processors": {
+          "items": [
+            {
+              "niceName": "COMECAR O JOGO",
+              "editorIsCollapsed": true,
+              "type": "Action",
+              "conditions": {
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": "",
+                        "controlAddress": "/inputValue"
+                      }
+                    ],
+                    "niceName": "From Input Value",
+                    "type": "From Input Value"
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequences": {
+                "parameters": [
+                  {
+                    "value": false,
+                    "controlAddress": "/cancelDelaysOnTrigger"
+                  }
+                ],
+                "items": [
+                  {
+                    "niceName": "Consequence",
+                    "type": "Consequence",
+                    "commandModule": "sequences",
+                    "commandPath": "Playback",
+                    "commandType": "Play Sequence",
+                    "command": {
+                      "parameters": [
+                        {
+                          "value": "/sequences/comearOJogo",
+                          "controlAddress": "/target"
+                        },
+                        {
+                          "value": true,
+                          "controlAddress": "/playFromStart"
+                        }
+                      ],
+                      "paramLinks": {
+                      }
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequencesOff": {
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              }
+            },
+            {
+              "niceName": "PARAR GERAL",
+              "editorIsCollapsed": true,
+              "type": "Action",
+              "conditions": {
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": "",
+                        "controlAddress": "/inputValue"
+                      }
+                    ],
+                    "niceName": "From Input Value",
+                    "type": "From Input Value"
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequences": {
+                "parameters": [
+                  {
+                    "value": false,
+                    "controlAddress": "/cancelDelaysOnTrigger"
+                  }
+                ],
+                "items": [
+                  {
+                    "niceName": "Consequence",
+                    "type": "Consequence",
+                    "commandModule": "sequences",
+                    "commandPath": "Playback",
+                    "commandType": "Stop All Sequences",
+                    "command": {
+                      "paramLinks": {
+                      }
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequencesOff": {
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              }
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        }
+      },
+      {
+        "parameters": [
+          {
+            "value": [
+              -706.0,
+              -222.0
+            ],
+            "controlAddress": "/viewUIPosition"
+          },
+          {
+            "value": true,
+            "controlAddress": "/active"
+          }
+        ],
+        "niceName": "IDLE",
+        "type": "State",
+        "processors": {
+          "items": [
+            {
+              "niceName": "idle / apresentacao",
+              "editorIsCollapsed": true,
+              "type": "Action",
+              "conditions": {
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": "",
+                        "controlAddress": "/inputValue"
+                      }
+                    ],
+                    "niceName": "From Input Value",
+                    "type": "From Input Value"
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequences": {
+                "parameters": [
+                  {
+                    "value": false,
+                    "controlAddress": "/cancelDelaysOnTrigger"
+                  }
+                ],
+                "items": [
+                  {
+                    "niceName": "Consequence",
+                    "type": "Consequence",
+                    "commandModule": "http",
+                    "commandPath": "",
+                    "commandType": "Request",
+                    "command": {
+                      "parameters": [
+                        {
+                          "value": "POST",
+                          "controlAddress": "/method"
+                        },
+                        {
+                          "value": "/api/modo_apresentacao",
+                          "controlAddress": "/address"
+                        },
+                        {
+                          "value": " {\n      \"mensagem\": \"Quiz - Aguardando jogadores\",\n      \"tema\": \"default\"\n    }",
+                          "controlAddress": "/extraHeaders"
+                        }
+                      ],
+                      "paramLinks": {
+                      },
+                      "argManager": {
+                        "viewOffset": [
+                          0,
+                          0
+                        ],
+                        "viewZoom": 1.0
+                      }
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequencesOff": {
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              }
+            },
+            {
+              "niceName": "verifica ranking",
+              "editorIsCollapsed": true,
+              "type": "Action",
+              "conditions": {
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": "",
+                        "controlAddress": "/inputValue"
+                      }
+                    ],
+                    "niceName": "From Input Value",
+                    "type": "From Input Value"
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequences": {
+                "parameters": [
+                  {
+                    "value": false,
+                    "controlAddress": "/cancelDelaysOnTrigger"
+                  }
+                ],
+                "items": [
+                  {
+                    "niceName": "Consequence",
+                    "type": "Consequence",
+                    "commandModule": "http",
+                    "commandPath": "",
+                    "commandType": "Request",
+                    "command": {
+                      "parameters": [
+                        {
+                          "value": "GET",
+                          "controlAddress": "/method"
+                        },
+                        {
+                          "value": "/api/status_apresentacao",
+                          "controlAddress": "/address"
+                        },
+                        {
+                          "value": "",
+                          "controlAddress": "/extraHeaders"
+                        }
+                      ],
+                      "paramLinks": {
+                      },
+                      "argManager": {
+                        "viewOffset": [
+                          0,
+                          0
+                        ],
+                        "viewZoom": 1.0
+                      }
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequencesOff": {
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              }
+            },
+            {
+              "niceName": "status",
+              "editorIsCollapsed": true,
+              "type": "Action",
+              "conditions": {
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": "",
+                        "controlAddress": "/inputValue"
+                      }
+                    ],
+                    "niceName": "From Input Value",
+                    "type": "From Input Value"
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequences": {
+                "parameters": [
+                  {
+                    "value": false,
+                    "controlAddress": "/cancelDelaysOnTrigger"
+                  }
+                ],
+                "items": [
+                  {
+                    "niceName": "Consequence",
+                    "type": "Consequence",
+                    "commandModule": "http",
+                    "commandPath": "",
+                    "commandType": "Request",
+                    "command": {
+                      "parameters": [
+                        {
+                          "value": "/api/status",
+                          "controlAddress": "/address"
+                        }
+                      ],
+                      "paramLinks": {
+                      },
+                      "argManager": {
+                        "viewOffset": [
+                          0,
+                          0
+                        ],
+                        "viewZoom": 1.0
+                      }
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "consequencesOff": {
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              }
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        }
+      }
+    ],
+    "viewOffset": [
+      289,
+      -84
+    ],
+    "viewZoom": 1.0,
+    "transitions": {
+      "hideInEditor": true,
+      "viewOffset": [
+        0,
+        0
+      ],
+      "viewZoom": 1.0
+    },
+    "comments": {
+      "hideInEditor": true,
+      "items": [
+        {
+          "parameters": [
+            {
+              "value": [
+                -645.0,
+                151.0
+              ],
+              "controlAddress": "/viewUIPosition"
+            },
+            {
+              "value": [
+                652.0,
+                88.0
+              ],
+              "controlAddress": "/viewUISize"
+            },
+            {
+              "value": "## Estado do Jogo\n- **status**: String - Estado atual do jogo\n  - Valores poss\u00edveis: \"aguardando\", \"iniciada\", \"rodada_ativa\", \"finalizada\", \"apresentacao\"\n- **rodada_atual**: Integer - N\u00famero da rodada atual (come\u00e7a em 0, incrementa para 1 na primeira rodada)\n- **total_rodadas**: Integer - Total de rodadas dispon\u00edveis no jogo\n",
+              "controlAddress": "/text"
+            }
+          ],
+          "niceName": "Comment",
+          "type": "Comment"
+        },
+        {
+          "parameters": [
+            {
+              "value": [
+                -579.0,
+                264.0
+              ],
+              "controlAddress": "/viewUIPosition"
+            },
+            {
+              "value": [
+                732.0,
+                139.0
+              ],
+              "controlAddress": "/viewUISize"
+            },
+            {
+              "value": "jogador1_id: Int Parameter\njogador1_nome: String Parameter\njogador1_pontuacao: Int Parameter\njogador2_id: Int Parameter\nE assim por diante...",
+              "controlAddress": "/text"
+            }
+          ],
+          "niceName": "Comment 1",
+          "type": "Comment"
+        }
+      ],
+      "viewOffset": [
+        289,
+        -84
+      ],
+      "viewZoom": 1.0
+    }
+  },
+  "sequences": {
+    "items": [
+      {
+        "parameters": [
+          {
+            "value": "",
+            "controlAddress": "/ltcSyncModule",
+            "enabled": false
+          }
+        ],
+        "niceName": "idle Mode - Demo",
+        "type": "Sequence",
+        "layers": {
+          "hideInEditor": true,
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "cues": {
+          "hideInEditor": true,
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "editing": true
+      },
+      {
+        "parameters": [
+          {
+            "value": 2.0,
+            "controlAddress": "/totalTime"
+          },
+          {
+            "value": 2.0,
+            "controlAddress": "/viewEndTime"
+          },
+          {
+            "value": "",
+            "controlAddress": "/ltcSyncModule",
+            "enabled": false
+          }
+        ],
+        "niceName": "Come\u00e7ar o jogo",
+        "type": "Sequence",
+        "layers": {
+          "hideInEditor": true,
+          "items": [
+            {
+              "parameters": [
+                {
+                  "value": 60.0,
+                  "controlAddress": "/listSize"
+                }
+              ],
+              "niceName": "Trigger",
+              "type": "Trigger",
+              "triggers": {
+                "hideInEditor": true,
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": 0.0,
+                        "controlAddress": "/time"
+                      },
+                      {
+                        "value": 0.4833333492279053,
+                        "controlAddress": "/flagY"
+                      }
+                    ],
+                    "niceName": "Comecou o jogo",
+                    "type": "TimeTrigger",
+                    "consequences": {
+                      "parameters": [
+                        {
+                          "value": false,
+                          "controlAddress": "/cancelDelaysOnTrigger"
+                        }
+                      ],
+                      "items": [
+                        {
+                          "niceName": "Consequence",
+                          "type": "Consequence",
+                          "commandModule": "stateMachine",
+                          "commandPath": "Action",
+                          "commandType": "Trigger Action",
+                          "command": {
+                            "parameters": [
+                              {
+                                "value": "/states/state/processors/iniciarJogo",
+                                "controlAddress": "/target"
+                              }
+                            ],
+                            "paramLinks": {
+                            }
+                          }
+                        }
+                      ],
+                      "viewOffset": [
+                        0,
+                        0
+                      ],
+                      "viewZoom": 1.0
+                    }
+                  },
+                  {
+                    "parameters": [
+                      {
+                        "value": false,
+                        "controlAddress": "/locked"
+                      },
+                      {
+                        "value": 1.720000028610229,
+                        "controlAddress": "/time"
+                      },
+                      {
+                        "value": 0.25,
+                        "controlAddress": "/flagY"
+                      }
+                    ],
+                    "niceName": "rodada",
+                    "type": "TimeTrigger",
+                    "consequences": {
+                      "parameters": [
+                        {
+                          "value": false,
+                          "controlAddress": "/cancelDelaysOnTrigger"
+                        }
+                      ],
+                      "items": [
+                        {
+                          "niceName": "Consequence",
+                          "type": "Consequence",
+                          "commandModule": "sequences",
+                          "commandPath": "Playback",
+                          "commandType": "Play Sequence",
+                          "command": {
+                            "parameters": [
+                              {
+                                "value": "/sequences/iniciarRodada",
+                                "controlAddress": "/target"
+                              },
+                              {
+                                "value": true,
+                                "controlAddress": "/playFromStart"
+                              }
+                            ],
+                            "paramLinks": {
+                            }
+                          }
+                        }
+                      ],
+                      "viewOffset": [
+                        0,
+                        0
+                      ],
+                      "viewZoom": 1.0
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              }
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "cues": {
+          "hideInEditor": true,
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        }
+      },
+      {
+        "parameters": [
+          {
+            "value": 2.0,
+            "controlAddress": "/totalTime"
+          },
+          {
+            "value": 2.0,
+            "controlAddress": "/viewEndTime"
+          },
+          {
+            "value": "",
+            "controlAddress": "/ltcSyncModule",
+            "enabled": false
+          }
+        ],
+        "niceName": "IniciarRodada",
+        "type": "Sequence",
+        "layers": {
+          "hideInEditor": true,
+          "items": [
+            {
+              "parameters": [
+                {
+                  "value": 60.0,
+                  "controlAddress": "/listSize"
+                }
+              ],
+              "niceName": "Trigger",
+              "type": "Trigger",
+              "triggers": {
+                "hideInEditor": true,
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": 0.0,
+                        "controlAddress": "/time"
+                      },
+                      {
+                        "value": 0.1500000059604645,
+                        "controlAddress": "/flagY"
+                      }
+                    ],
+                    "niceName": "proxi rodada",
+                    "type": "TimeTrigger",
+                    "consequences": {
+                      "parameters": [
+                        {
+                          "value": false,
+                          "controlAddress": "/cancelDelaysOnTrigger"
+                        }
+                      ],
+                      "items": [
+                        {
+                          "niceName": "Consequence",
+                          "type": "Consequence",
+                          "commandModule": "stateMachine",
+                          "commandPath": "Action",
+                          "commandType": "Trigger Action",
+                          "command": {
+                            "parameters": [
+                              {
+                                "value": "/states/state/processors/proximaRodada",
+                                "controlAddress": "/target"
+                              }
+                            ],
+                            "paramLinks": {
+                            }
+                          }
+                        }
+                      ],
+                      "viewOffset": [
+                        0,
+                        0
+                      ],
+                      "viewZoom": 1.0
+                    }
+                  },
+                  {
+                    "parameters": [
+                      {
+                        "value": 1.0,
+                        "controlAddress": "/time"
+                      },
+                      {
+                        "value": 0.008333336561918259,
+                        "controlAddress": "/flagY"
+                      }
+                    ],
+                    "niceName": "carrega pergunta atual",
+                    "type": "TimeTrigger",
+                    "consequences": {
+                      "parameters": [
+                        {
+                          "value": false,
+                          "controlAddress": "/cancelDelaysOnTrigger"
+                        }
+                      ],
+                      "items": [
+                        {
+                          "niceName": "Consequence",
+                          "type": "Consequence",
+                          "commandModule": "stateMachine",
+                          "commandPath": "Action",
+                          "commandType": "Trigger Action",
+                          "command": {
+                            "parameters": [
+                              {
+                                "value": "/states/state/processors/perguntaAtual",
+                                "controlAddress": "/target"
+                              }
+                            ],
+                            "paramLinks": {
+                            }
+                          }
+                        }
+                      ],
+                      "viewOffset": [
+                        0,
+                        0
+                      ],
+                      "viewZoom": 1.0
+                    }
+                  },
+                  {
+                    "parameters": [
+                      {
+                        "value": 2.0,
+                        "controlAddress": "/time"
+                      },
+                      {
+                        "value": 0.0,
+                        "controlAddress": "/flagY"
+                      }
+                    ],
+                    "niceName": "tempo resposta",
+                    "type": "TimeTrigger",
+                    "consequences": {
+                      "parameters": [
+                        {
+                          "value": false,
+                          "controlAddress": "/cancelDelaysOnTrigger"
+                        }
+                      ],
+                      "items": [
+                        {
+                          "niceName": "Consequence",
+                          "type": "Consequence",
+                          "commandModule": "sequences",
+                          "commandPath": "Playback",
+                          "commandType": "Play Sequence",
+                          "command": {
+                            "parameters": [
+                              {
+                                "value": "/sequences/tempoDeResposta",
+                                "controlAddress": "/target"
+                              },
+                              {
+                                "value": true,
+                                "controlAddress": "/playFromStart"
+                              }
+                            ],
+                            "paramLinks": {
+                            }
+                          }
+                        }
+                      ],
+                      "viewOffset": [
+                        0,
+                        0
+                      ],
+                      "viewZoom": 1.0
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              }
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "cues": {
+          "hideInEditor": true,
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        }
+      },
+      {
+        "parameters": [
+          {
+            "value": 30.0,
+            "controlAddress": "/totalTime"
+          },
+          {
+            "value": 10.0,
+            "controlAddress": "/viewEndTime"
+          },
+          {
+            "value": "",
+            "controlAddress": "/ltcSyncModule",
+            "enabled": false
+          }
+        ],
+        "niceName": "tempo de resposta",
+        "type": "Sequence",
+        "layers": {
+          "hideInEditor": true,
+          "items": [
+            {
+              "parameters": [
+                {
+                  "value": 60.0,
+                  "controlAddress": "/listSize"
+                }
+              ],
+              "niceName": "Trigger",
+              "type": "Trigger",
+              "triggers": {
+                "hideInEditor": true,
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": 0.0,
+                        "controlAddress": "/time"
+                      },
+                      {
+                        "value": 0.25,
+                        "controlAddress": "/flagY"
+                      }
+                    ],
+                    "niceName": "disparaContador",
+                    "type": "TimeTrigger",
+                    "consequences": {
+                      "parameters": [
+                        {
+                          "value": false,
+                          "controlAddress": "/cancelDelaysOnTrigger"
+                        }
+                      ],
+                      "items": [
+                        {
+                          "niceName": "Consequence",
+                          "type": "Consequence",
+                          "commandModule": "stateMachine",
+                          "commandPath": "Action",
+                          "commandType": "Trigger Action",
+                          "command": {
+                            "parameters": [
+                              {
+                                "value": "/states/state/processors/iniciarTimer",
+                                "controlAddress": "/target"
+                              }
+                            ],
+                            "paramLinks": {
+                            }
+                          }
+                        }
+                      ],
+                      "viewOffset": [
+                        0,
+                        0
+                      ],
+                      "viewZoom": 1.0
+                    }
+                  },
+                  {
+                    "parameters": [
+                      {
+                        "value": 1.0,
+                        "controlAddress": "/time"
+                      },
+                      {
+                        "value": 1.0,
+                        "controlAddress": "/flagY"
+                      }
+                    ],
+                    "niceName": "Trigger 1",
+                    "type": "TimeTrigger",
+                    "consequences": {
+                      "parameters": [
+                        {
+                          "value": false,
+                          "controlAddress": "/cancelDelaysOnTrigger"
+                        }
+                      ],
+                      "items": [
+                        {
+                          "niceName": "Consequence",
+                          "type": "Consequence",
+                          "commandModule": "stateMachine",
+                          "commandPath": "Action",
+                          "commandType": "Trigger Action",
+                          "command": {
+                            "parameters": [
+                              {
+                                "value": "/states/state/processors/verTempoRestante",
+                                "controlAddress": "/target"
+                              }
+                            ],
+                            "paramLinks": {
+                            }
+                          }
+                        }
+                      ],
+                      "viewOffset": [
+                        0,
+                        0
+                      ],
+                      "viewZoom": 1.0
+                    }
+                  },
+                  {
+                    "parameters": [
+                      {
+                        "value": 2.119999885559082,
+                        "controlAddress": "/time"
+                      },
+                      {
+                        "value": 1.0,
+                        "controlAddress": "/flagY"
+                      }
+                    ],
+                    "niceName": "Trigger 2",
+                    "type": "TimeTrigger",
+                    "consequences": {
+                      "parameters": [
+                        {
+                          "value": false,
+                          "controlAddress": "/cancelDelaysOnTrigger"
+                        }
+                      ],
+                      "items": [
+                        {
+                          "niceName": "Consequence",
+                          "type": "Consequence",
+                          "commandModule": "stateMachine",
+                          "commandPath": "Action",
+                          "commandType": "Trigger Action",
+                          "command": {
+                            "parameters": [
+                              {
+                                "value": "/states/state/processors/verTempoRestante",
+                                "controlAddress": "/target"
+                              }
+                            ],
+                            "paramLinks": {
+                            }
+                          }
+                        }
+                      ],
+                      "viewOffset": [
+                        0,
+                        0
+                      ],
+                      "viewZoom": 1.0
+                    }
+                  },
+                  {
+                    "parameters": [
+                      {
+                        "value": 3.019999980926514,
+                        "controlAddress": "/time"
+                      },
+                      {
+                        "value": 1.0,
+                        "controlAddress": "/flagY"
+                      }
+                    ],
+                    "niceName": "Trigger 3",
+                    "type": "TimeTrigger",
+                    "consequences": {
+                      "parameters": [
+                        {
+                          "value": false,
+                          "controlAddress": "/cancelDelaysOnTrigger"
+                        }
+                      ],
+                      "items": [
+                        {
+                          "niceName": "Consequence",
+                          "type": "Consequence",
+                          "commandModule": "stateMachine",
+                          "commandPath": "Action",
+                          "commandType": "Trigger Action",
+                          "command": {
+                            "parameters": [
+                              {
+                                "value": "/states/state/processors/verTempoRestante",
+                                "controlAddress": "/target"
+                              }
+                            ],
+                            "paramLinks": {
+                            }
+                          }
+                        }
+                      ],
+                      "viewOffset": [
+                        0,
+                        0
+                      ],
+                      "viewZoom": 1.0
+                    }
+                  },
+                  {
+                    "parameters": [
+                      {
+                        "value": 4.659999847412109,
+                        "controlAddress": "/time"
+                      },
+                      {
+                        "value": 1.0,
+                        "controlAddress": "/flagY"
+                      }
+                    ],
+                    "niceName": "Trigger 4",
+                    "type": "TimeTrigger",
+                    "consequences": {
+                      "parameters": [
+                        {
+                          "value": false,
+                          "controlAddress": "/cancelDelaysOnTrigger"
+                        }
+                      ],
+                      "items": [
+                        {
+                          "niceName": "Consequence",
+                          "type": "Consequence",
+                          "commandModule": "stateMachine",
+                          "commandPath": "Action",
+                          "commandType": "Trigger Action",
+                          "command": {
+                            "parameters": [
+                              {
+                                "value": "/states/state/processors/verTempoRestante",
+                                "controlAddress": "/target"
+                              }
+                            ],
+                            "paramLinks": {
+                            }
+                          }
+                        }
+                      ],
+                      "viewOffset": [
+                        0,
+                        0
+                      ],
+                      "viewZoom": 1.0
+                    }
+                  },
+                  {
+                    "parameters": [
+                      {
+                        "value": 7.460000038146973,
+                        "controlAddress": "/time"
+                      },
+                      {
+                        "value": 1.0,
+                        "controlAddress": "/flagY"
+                      }
+                    ],
+                    "niceName": "proxima Rododa",
+                    "type": "TimeTrigger",
+                    "consequences": {
+                      "parameters": [
+                        {
+                          "value": false,
+                          "controlAddress": "/cancelDelaysOnTrigger"
+                        }
+                      ],
+                      "items": [
+                        {
+                          "niceName": "Consequence",
+                          "type": "Consequence",
+                          "commandModule": "sequences",
+                          "commandPath": "Playback",
+                          "commandType": "Play Sequence",
+                          "command": {
+                            "parameters": [
+                              {
+                                "value": "/sequences/iniciarRodada",
+                                "controlAddress": "/target"
+                              },
+                              {
+                                "value": true,
+                                "controlAddress": "/playFromStart"
+                              }
+                            ],
+                            "paramLinks": {
+                            }
+                          }
+                        }
+                      ],
+                      "viewOffset": [
+                        0,
+                        0
+                      ],
+                      "viewZoom": 1.0
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              }
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "cues": {
+          "hideInEditor": true,
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        }
+      }
+    ],
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  },
+  "routers": {
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  }
+}
