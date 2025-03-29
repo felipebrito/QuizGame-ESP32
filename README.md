@@ -107,21 +107,90 @@ O jogo possui os seguintes estados:
 - **rodada_ativa**: Rodada em andamento com pergunta ativa
 - **finalizada**: Partida finalizada, exibindo pontuações e vencedores
 
-## Fluxo do Jogo
+## Fluxo de Jogo no Chataigne
 
-O fluxo correto para uma partida é:
+## Sequência Correta de Endpoints
 
-1. `/api/modo_apresentacao` - Iniciar em modo apresentação (tela inicial)
-2. `/api/nova_partida` - Criar nova partida (resetar estado)
-3. `/api/modo_selecao` - Entrar no modo de seleção de jogadores
-4. `/api/configurar_partida` - Configurar jogadores, rodadas e tempo
-5. `/api/iniciar_partida` - Iniciar a partida configurada
-6. Para cada rodada:
-   - `/api/abertura_rodada` - Iniciar abertura para a próxima rodada
-   - `/api/iniciar_rodada` - Iniciar a rodada com a pergunta
-   - `/api/enviar_resposta` - Jogadores enviam respostas
-   - `/api/verificar_avancar` - Verificar se pode avançar para próxima rodada
-7. Ao final, retornar ao modo apresentação
+Para implementar corretamente o fluxo de jogo no Chataigne, siga a sequência abaixo:
+
+1. **Iniciar nova partida**
+   ```
+   POST /api/nova_partida
+   ```
+
+2. **Configurar partida**
+   ```
+   POST /api/configurar_partida
+   Parâmetros: jogadores=[2,1,5], duracao_rodada=30, total_rodadas=4
+   ```
+
+3. **Iniciar partida**
+   ```
+   POST /api/iniciar_partida
+   ```
+   
+4. **Abertura do programa**
+   ```
+   POST /api/abertura_rodada
+   ```
+   - Esperar a animação de abertura terminar
+
+5. **Para cada rodada (1 a 4):**
+   
+   a. **Exibir vinheta da rodada**
+      ```
+      POST /api/vinheta_rodada
+      ```
+      - Isso incrementa automaticamente a rodada atual
+      - Esperar a animação da vinheta terminar
+   
+   b. **Iniciar a rodada**
+      ```
+      POST /api/iniciar_rodada
+      ```
+      - Exibir a pergunta e opções
+      - Jogadores respondem usando Arduino
+   
+   c. **Para cada jogador**
+      ```
+      POST /api/enviar_resposta
+      Parâmetros: jogador=N&resposta=X
+      ```
+      - onde N é a posição do jogador (1, 2, 3)
+      - X é a resposta (A, B, C, D)
+      - Se não houver resposta dentro do tempo, o sistema registra automaticamente
+   
+   d. **Quando todos responderem ou tempo acabar**
+      - A rodada é finalizada automaticamente
+      - Verificar que todos responderam:
+        ```
+        GET /api/verificar_avancar
+        ```
+      - O status muda para "rodada_finalizada"
+      - Exibir animação/efeitos de final de rodada
+   
+   e. **Preparar para próxima rodada (exceto após a última)**
+      - Voltar para o passo 5a
+
+6. **Após a última rodada**
+   - O jogo finaliza automaticamente
+   - Status muda para "jogo_finalizado"
+   - Exibir animação/efeitos de fim de jogo
+
+## Observações importantes
+
+1. O sistema incrementa a rodada no endpoint `/api/vinheta_rodada`. Não precisa chamar nenhum outro endpoint para incrementar.
+
+2. O sistema finaliza a rodada automaticamente quando todos os jogadores respondem ou quando o tempo acaba.
+
+3. Não chamar abertura entre rodadas. O fluxo deve ser:
+   ```
+   Abertura -> Vinheta R1 -> Rodada 1 -> Vinheta R2 -> Rodada 2 -> ... -> Vinheta R4 -> Rodada 4 -> Fim
+   ```
+
+4. É recomendável explicitar um pequeno atraso entre os chamados para dar tempo do servidor processar as mudanças de estado.
+
+5. Não existe o endpoint `/api/finalizar_rodada`, o sistema finaliza as rodadas automaticamente.
 
 ## Endpoints da API
 
