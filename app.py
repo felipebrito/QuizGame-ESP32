@@ -942,12 +942,42 @@ def modo_apresentacao():
             reverse=True
         )[:3]
         
+        # Pasta para salvar as fotos dos jogadores
+        pasta_ranking = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ranking")
+        
+        # Garantir que a pasta existe
+        os.makedirs(pasta_ranking, exist_ok=True)
+        
+        # Salvar as fotos dos jogadores com nomes padronizados (01.jpg, 02.jpg, 03.jpg)
+        for i, jogador in enumerate(top_jogadores):
+            if "foto" in jogador and jogador["foto"]:
+                try:
+                    # Baixar a imagem do jogador
+                    response = requests.get(jogador["foto"], stream=True)
+                    if response.status_code == 200:
+                        # Nome do arquivo (01.jpg, 02.jpg, 03.jpg)
+                        nome_arquivo = f"{i+1:02d}.jpg"
+                        caminho_arquivo = os.path.join(pasta_ranking, nome_arquivo)
+                        
+                        # Salvar a imagem
+                        with open(caminho_arquivo, 'wb') as arquivo:
+                            for chunk in response.iter_content(1024):
+                                arquivo.write(chunk)
+                        
+                        app.logger.info(f"Foto do jogador {jogador['nome']} salva como {nome_arquivo} em {pasta_ranking}")
+                    else:
+                        app.logger.error(f"Erro ao baixar foto do jogador {jogador['nome']}: status {response.status_code}")
+                except Exception as e:
+                    app.logger.error(f"Erro ao processar foto do jogador {jogador['nome']}: {str(e)}")
+        
+        # Logging dos top jogadores
+        app.logger.info("Top 3 jogadores do ranking:")
+        for i, jogador in enumerate(top_jogadores):
+            app.logger.info(f"{i+1}º - {jogador['nome']}: {jogador['pontuacao_total']} pontos")
+        
         # Enviar status via OSC
         osc_client.send_message("/quiz/status", status_jogo)
         app.logger.info(f"OSC enviado: /quiz/status = {status_jogo}")
-        
-        # Enviar os top jogadores via OSC
-        enviar_top_jogadores_osc(top_jogadores)
         
         return jsonify({
             "status": "ok",

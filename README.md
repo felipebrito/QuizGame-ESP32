@@ -487,4 +487,27 @@ Para configurar o Chataigne para receber estes sinais:
 - O índice da resposta correta é enviado para `/quiz/pergunta/resposta_correta` (valor 1, 2 ou 3)
 - Por compatibilidade, todas as opções também são enviadas juntas em formato JSON para `/quiz/pergunta/opcoes`
 
-Você pode usar essas mensagens OSC individuais para cada opção para direcionar o texto para diferentes áreas na interface do Chataigne ou em software de visualização. 
+Você pode usar essas mensagens OSC individuais para cada opção para direcionar o texto para diferentes áreas na interface do Chataigne ou em software de visualização.
+
+### Modo Apresentação (Idle Mode)
+
+O sistema possui um modo de apresentação que exibe os 3 melhores jogadores com suas pontuações acumuladas. Para ativar este modo, chame:
+
+```
+POST /api/modo_apresentacao
+```
+
+**Funcionalidades do modo apresentação:**
+
+1. **Fotos dos jogadores:** O sistema salva automaticamente as fotos dos 3 melhores jogadores na pasta `/ranking` com os nomes padronizados:
+   - `01.jpg` - 1º colocado no ranking
+   - `02.jpg` - 2º colocado no ranking
+   - `03.jpg` - 3º colocado no ranking
+
+2. **Integração com Arena:** Você pode vincular estas imagens diretamente no Arena ou outro software de exibição, pois os nomes dos arquivos permanecem constantes, apenas o conteúdo é atualizado quando o ranking muda.
+
+3. **Status do jogo:** O sistema envia o status "apresentacao" via OSC para o Chataigne, permitindo configurar transições automáticas.
+
+Este modo deve ser ativado:
+- No início do jogo antes de iniciar uma nova partida 
+- Ao final de uma partida completa antes de iniciar uma nova 
