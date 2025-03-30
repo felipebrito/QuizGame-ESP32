@@ -315,4 +315,186 @@ curl -X POST -H "Content-Type: application/json" -d '{"jogador": "1", "resposta"
 
 ## Licença
 
-Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes. 
+Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+# Quiz Game API
+
+## Fluxo de Teste no Chataigne
+
+Para testar o sistema de quiz no Chataigne, siga este fluxo de chamadas de API:
+
+### 1. Configuração Inicial
+
+1. **Iniciar Nova Partida**
+   ```
+   POST /api/nova_partida
+   ```
+   Este endpoint limpa o estado atual e prepara o sistema para uma nova configuração.
+
+2. **Ativar Modo de Seleção**
+   ```
+   POST /api/modo_selecao
+   ```
+   Muda o modo do sistema para seleção, permitindo escolher jogadores.
+
+3. **Configurar Partida**
+   ```
+   POST /api/configurar_partida
+   Parâmetros: jogadores=[id1,id2,id3], duracao_rodada=30, total_rodadas=4
+   ```
+   Define os jogadores participantes e configurações da partida.
+
+4. **Iniciar Partida**
+   ```
+   POST /api/iniciar_partida
+   ```
+   Inicia oficialmente a partida, alterando o status para "abertura".
+
+### 2. Fluxo de Rodada
+
+Para cada rodada, siga esta sequência:
+
+1. **Exibir Abertura (apenas na primeira rodada)**
+   ```
+   POST /api/abertura_rodada
+   ```
+   Exibe o vídeo/animação de abertura do programa.
+
+2. **Exibir Vinheta da Rodada**
+   ```
+   POST /api/vinheta_rodada
+   ```
+   Exibe a vinheta para a rodada atual.
+
+3. **Iniciar a Rodada**
+   ```
+   POST /api/iniciar_rodada
+   ```
+   Inicia a rodada atual, apresentando a pergunta e opções.
+
+4. **Enviar Respostas dos Jogadores**
+   ```
+   POST /api/enviar_resposta
+   Parâmetros: jogador=posição, resposta=letra/número, tempo=segundos
+   ```
+   Envia a resposta de um jogador. O parâmetro `jogador` representa a posição (1, 2 ou 3). A resposta pode ser A, B, C, D ou 1, 2, 3, 4.
+
+5. **Verificar Status da Rodada**
+   ```
+   GET /api/status
+   ```
+   Verifica o status atual da partida e rodada.
+
+6. **Verificar se Pode Avançar para Próxima Rodada**
+   ```
+   POST /api/verificar_avancar
+   ```
+   Verifica se todos responderam e se é possível avançar para a próxima rodada.
+
+### 3. Finalização
+
+Após a última rodada:
+
+1. **Verificar Resultado Final**
+   ```
+   GET /api/status
+   ```
+   Verifica o status final e pontuação dos jogadores.
+
+2. **Voltar ao Modo Apresentação**
+   ```
+   POST /api/modo_apresentacao
+   ```
+   Retorna ao modo de apresentação, exibindo o ranking geral.
+
+### Importante:
+
+- O sistema gerencia automaticamente o tempo de resposta para cada rodada.
+- Se um jogador não responder dentro do tempo configurado, o sistema considerará que ele não respondeu.
+- Após o tempo da rodada ou quando todos os jogadores responderem, o sistema muda automaticamente o status para "rodada_finalizada".
+- É recomendável aguardar alguns segundos entre as chamadas API, especialmente entre o fim de uma rodada e o início da próxima.
+
+### Exemplo de Sequência em Chataigne:
+
+1. Limpar estado: `POST /api/nova_partida`
+2. Modo seleção: `POST /api/modo_selecao`
+3. Configurar partida com 3 jogadores: `POST /api/configurar_partida` (com os parâmetros apropriados)
+4. Iniciar a partida: `POST /api/iniciar_partida`
+5. Exibir abertura: `POST /api/abertura_rodada`
+6. Para cada rodada (1 a N):
+   - Exibir vinheta: `POST /api/vinheta_rodada`
+   - Iniciar rodada: `POST /api/iniciar_rodada`
+   - Enviar respostas dos jogadores: `POST /api/enviar_resposta` (uma chamada para cada jogador)
+   - Verificar status: `GET /api/status`
+   - Verificar se pode avançar: `POST /api/verificar_avancar`
+7. Finalizar exibindo resultado: `POST /api/modo_apresentacao`
+
+## Comunicação OSC com Chataigne
+
+O backend envia mensagens OSC para o Chataigne para sincronizar o estado do jogo. Configure o Chataigne para receber na porta 8000.
+
+### Principais Mensagens OSC
+
+| Endereço OSC | Descrição | Exemplo de Valor |
+|--------------|-----------|------------------|
+| `/quiz/status` | Status atual do jogo | "apresentacao", "selecao", "jogando", "rodada_finalizada" |
+| `/quiz/resposta/jogador_id` | ID do jogador que respondeu | "1", "2", "5" |
+| `/quiz/resposta/jogador_nome` | Nome do jogador que respondeu | "Maria Silva" |
+| `/quiz/resposta/correta` | Se a resposta foi correta | 1 (correta) ou 0 (incorreta) |
+| `/quiz/resposta/pontos` | Pontos obtidos na resposta | 91 |
+| `/quiz/jogador{N}` | Status da resposta do jogador na posição N | 1 (correta) ou 0 (incorreta) |
+| `/quiz/partida/respostas` | Total de respostas recebidas | 2 |
+| `/quiz/partida/jogador{N}/nome` | Nome do jogador na posição N do ranking | "Maria Silva" |
+| `/quiz/partida/jogador{N}/pontos` | Pontuação do jogador na posição N do ranking | 91 |
+| `/quiz/partida/jogador{N}/posicao` | Posição do jogador no ranking | 1 |
+| `/quiz/partida/jogador{N}/id` | ID do jogador na posição N do ranking | 2 |
+| `/quiz/ranking/total` | Número de jogadores no ranking geral | 3 |
+| `/quiz/ranking/jogador{N}/foto` | Nome do arquivo de foto do jogador N no ranking | "01.jpg" |
+
+### Eventos Disparados pelo Backend
+
+Os seguintes eventos são disparados automaticamente pelo backend e podem ser monitorados através das mensagens OSC:
+
+1. **Finalização Automática da Rodada**
+   - Quando o tempo da rodada acaba ou todos os jogadores respondem
+   - Mensagens OSC: `/quiz/status = rodada_finalizada` e trigger para finalizar rodada
+
+2. **Atualização de Ranking**
+   - Quando algum jogador responde, o ranking é atualizado e enviado
+   - Mensagens OSC: `/quiz/partida/jogador{N}/posicao`, `/quiz/partida/jogador{N}/pontos`
+
+3. **Resposta de Jogador**
+   - Quando um jogador envia uma resposta
+   - Mensagens OSC: `/quiz/resposta/jogador_id`, `/quiz/resposta/correta`, `/quiz/jogador{N}`
+
+4. **Finalização de Jogo**
+   - Quando todas as rodadas são concluídas
+   - Mensagens OSC: `/quiz/status = jogo_finalizado`
+
+## Integrando Frontend
+
+Para desenvolver um frontend que se integre com este backend, considere implementar:
+
+1. **Escuta de WebSockets ou Polling**
+   - Para receber atualizações do estado do jogo em tempo real
+   - Endpoint: `GET /api/status` para polling
+
+2. **Exibição de Perguntas e Respostas**
+   - Utilize `GET /api/status` para obter a pergunta atual e opções
+   - Atualize a interface quando o estado mudar para "jogando"
+
+3. **Exibição de Ranking**
+   - Exiba o ranking após cada rodada (status = "rodada_finalizada")
+   - Destaque visualmente qual resposta estava correta
+
+4. **Tratamento de Tempo**
+   - Implemente um contador regressivo baseado na duração da rodada
+   - Desabilite as opções de resposta quando o tempo acabar
+
+5. **Transições de Tela**
+   - Monitore mudanças no `status_jogo` para controlar transições:
+     - "abertura" → Exibir vídeo de abertura
+     - "vinheta rodada X" → Exibir vinheta da rodada
+     - "jogando" → Exibir pergunta e opções
+     - "rodada_finalizada" → Exibir resultados da rodada
+     - "jogo_finalizado" → Exibir resultado final 

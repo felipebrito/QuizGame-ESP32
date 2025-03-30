@@ -2021,12 +2021,17 @@ def calcular_ranking_atual():
         
     return ranking
 
-# Adicionando função para inicializar o banco de dados ao iniciar o app
-@app.before_first_request
-def before_first_request():
-    """Inicializa o banco de dados antes da primeira requisição"""
-    init_db()
-    app.logger.info("Banco de dados inicializado para a aplicação")
+# Variável para controlar se já inicializamos o DB
+db_initialized = False
+
+@app.before_request
+def before_request():
+    """Inicializa o banco de dados na primeira requisição"""
+    global db_initialized
+    if not db_initialized:
+        init_db()
+        app.logger.info("Banco de dados inicializado para a aplicação")
+        db_initialized = True
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
