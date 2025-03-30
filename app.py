@@ -2077,5 +2077,59 @@ def enviar_trigger_finaliza_rodada_osc():
         import traceback
         app.logger.error(traceback.format_exc())
 
+@app.route('/api/abertura_rodada', methods=['POST'])
+def abertura_rodada():
+    """
+    Exibe a vinheta principal do jogo após iniciar a partida.
+    Esta função deve ser chamada após iniciar a partida e antes da primeira rodada.
+    """
+    global status_jogo, partida
+    
+    try:
+        app.logger.info("Iniciando abertura do programa")
+        
+        # Verificar se a partida foi iniciada
+        if partida["status"] not in ["preparacao", "iniciada", "abertura"]:
+            return jsonify({
+                "status": "erro",
+                "erro": "Não é possível exibir a abertura agora",
+                "status_atual": partida["status"]
+            }), 400
+        
+        # Atualizar o status do jogo para abertura
+        status_jogo = "abertura_programa"
+        partida["status"] = "abertura_programa"
+        
+        # Enviar status via OSC
+        osc_client.send_message("/quiz/status", status_jogo)
+        app.logger.info(f"OSC enviado: /quiz/status = {status_jogo}")
+        
+        # Enviar informações adicionais
+        osc_client.send_message("/quiz/rodada/atual", partida["rodada_atual"])
+        osc_client.send_message("/quiz/rodada/total", partida["total_rodadas"])
+        
+        # Enviar informações dos jogadores
+        enviar_jogadores_partida_osc()
+        
+        # Enviar pontuações iniciais
+        enviar_pontuacoes_atuais_osc()
+        
+        return jsonify({
+            "status": "ok",
+            "mensagem": "Abertura do programa em exibição",
+            "rodada_atual": partida["rodada_atual"],
+            "total_rodadas": partida["total_rodadas"],
+            "status_jogo": status_jogo
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Erro ao processar abertura: {str(e)}")
+        import traceback
+        app.logger.error(traceback.format_exc())
+        return jsonify({
+            "status": "erro",
+            "erro": f"Erro ao processar abertura: {str(e)}"
+        }), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)

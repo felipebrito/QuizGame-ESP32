@@ -127,17 +127,23 @@ Para implementar o fluxo de jogo correto no Chataigne, siga esta sequência de c
      - `total_rodadas`: número total de rodadas (padrão: 4)
 
 4. **Iniciar a partida**:
-   - Chamar `POST /api/iniciar_partida` para começar a abertura do programa
-   - Após a abertura terminar, chamar `POST /api/vinheta_rodada` para exibir a vinheta da primeira rodada
+   - Chamar `POST /api/iniciar_partida` para começar a partida
 
-5. **Para cada rodada (repetir para cada rodada)**:
+5. **Abertura do programa**:
+   - Chamar `POST /api/abertura_rodada` para exibir a vinheta principal do jogo
+   - Esta vinheta é exibida apenas uma vez no início da partida
+
+6. **Iniciar a primeira rodada**:
+   - Chamar `POST /api/vinheta_rodada` para exibir a vinheta da primeira rodada
+
+7. **Para cada rodada (repetir para cada rodada)**:
    - Após a vinheta, chamar `POST /api/iniciar_rodada` para exibir a pergunta atual
    - Os jogadores enviam suas respostas via ESP32
    - Quando todos os jogadores responderem (ou o tempo acabar), o sistema envia um pulso OSC para `/quiz/trigger/finaliza_rodada`
    - **O Chataigne deve ESCUTAR este trigger** e reagir chamando `/api/vinheta_rodada` para avançar para a próxima rodada
    - Este processo se repete até a última rodada
 
-6. **Final do jogo**:
+8. **Final do jogo**:
    - Após a última rodada, o sistema automaticamente finaliza o jogo
    - É exibido o ranking final com os vencedores
    - Para iniciar um novo jogo, volte ao passo 1
@@ -157,14 +163,15 @@ Para testar o sistema completo, siga esta sequência:
 2. `POST /api/nova_partida` - Inicia uma nova partida
 3. `POST /api/modo_selecao` - Entra no modo de seleção de jogadores
 4. `POST /api/configurar_partida` com os jogadores selecionados
-5. `POST /api/iniciar_partida` - Inicia a abertura do programa
-6. `POST /api/vinheta_rodada` - Exibe a vinheta da primeira rodada
-7. `POST /api/iniciar_rodada` - Inicia a primeira rodada com a pergunta
-8. Aguardar as respostas dos jogadores
-9. O sistema enviará o trigger de finalização quando todos responderem
-10. Chataigne detecta o trigger e chama `POST /api/vinheta_rodada` para a próxima rodada
-11. Repita os passos 7-10 para cada rodada
-12. Após a última rodada, o jogo terminará automaticamente
+5. `POST /api/iniciar_partida` - Inicia a partida
+6. `POST /api/abertura_rodada` - Exibe a vinheta principal do jogo
+7. `POST /api/vinheta_rodada` - Exibe a vinheta da primeira rodada
+8. `POST /api/iniciar_rodada` - Inicia a primeira rodada com a pergunta
+9. Aguardar as respostas dos jogadores
+10. O sistema enviará o trigger de finalização quando todos responderem
+11. Chataigne detecta o trigger e chama `POST /api/vinheta_rodada` para a próxima rodada
+12. Repita os passos 8-11 para cada rodada
+13. Após a última rodada, o jogo terminará automaticamente
 
 ## Sequência Correta de Endpoints
 
