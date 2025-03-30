@@ -109,6 +109,63 @@ O jogo possui os seguintes estados:
 
 ## Fluxo de Jogo no Chataigne
 
+Para implementar o fluxo de jogo correto no Chataigne, siga esta sequência de chamadas para a API:
+
+1. **Modo Apresentação (Idle Mode)**:
+   - Chamar `POST /api/modo_apresentacao`
+   - Este modo exibe o ranking dos 3 melhores jogadores (nome, foto e pontuação acumulada)
+   - É o ponto de partida antes de iniciar uma nova partida
+
+2. **Iniciar uma nova partida**:
+   - Chamar `POST /api/nova_partida` para resetar o estado do jogo
+   - Em seguida, chamar `POST /api/modo_selecao` para exibir a tela de seleção de jogadores
+
+3. **Configurar a partida**:
+   - Chamar `POST /api/configurar_partida` com os parâmetros:
+     - `jogadores`: lista com IDs dos jogadores selecionados (exatamente 3)
+     - `duracao_rodada`: tempo em segundos (padrão: 30)
+     - `total_rodadas`: número total de rodadas (padrão: 4)
+
+4. **Iniciar a partida**:
+   - Chamar `POST /api/iniciar_partida` para começar a abertura do programa
+   - Após a abertura terminar, chamar `POST /api/vinheta_rodada` para exibir a vinheta da primeira rodada
+
+5. **Para cada rodada (repetir para cada rodada)**:
+   - Após a vinheta, chamar `POST /api/iniciar_rodada` para exibir a pergunta atual
+   - Os jogadores enviam suas respostas via ESP32
+   - Quando todos os jogadores responderem (ou o tempo acabar), o sistema envia um pulso OSC para `/quiz/trigger/finaliza_rodada`
+   - **O Chataigne deve ESCUTAR este trigger** e reagir chamando `/api/vinheta_rodada` para avançar para a próxima rodada
+   - Este processo se repete até a última rodada
+
+6. **Final do jogo**:
+   - Após a última rodada, o sistema automaticamente finaliza o jogo
+   - É exibido o ranking final com os vencedores
+   - Para iniciar um novo jogo, volte ao passo 1
+
+### Notas importantes:
+
+- O sistema gerencia automaticamente a fase atual da partida e o progresso das rodadas
+- Acompanhe o status do jogo através das mensagens OSC enviadas para `/quiz/status`
+- Na finalização da rodada, o sistema enviará um **pulso (1 seguido por 0)** para o endereço `/quiz/trigger/finaliza_rodada` - é importante configurar o Chataigne para detectar este pulso e avançar o jogo
+- Recomenda-se adicionar tempos de espera apropriados entre as chamadas de API (por exemplo, aguardar o término da animação de abertura antes de chamar a vinheta da rodada)
+
+### Sequência de testes:
+
+Para testar o sistema completo, siga esta sequência:
+
+1. `POST /api/modo_apresentacao` - Exibe o ranking dos melhores jogadores
+2. `POST /api/nova_partida` - Inicia uma nova partida
+3. `POST /api/modo_selecao` - Entra no modo de seleção de jogadores
+4. `POST /api/configurar_partida` com os jogadores selecionados
+5. `POST /api/iniciar_partida` - Inicia a abertura do programa
+6. `POST /api/vinheta_rodada` - Exibe a vinheta da primeira rodada
+7. `POST /api/iniciar_rodada` - Inicia a primeira rodada com a pergunta
+8. Aguardar as respostas dos jogadores
+9. O sistema enviará o trigger de finalização quando todos responderem
+10. Chataigne detecta o trigger e chama `POST /api/vinheta_rodada` para a próxima rodada
+11. Repita os passos 7-10 para cada rodada
+12. Após a última rodada, o jogo terminará automaticamente
+
 ## Sequência Correta de Endpoints
 
 Para implementar corretamente o fluxo de jogo no Chataigne, siga a sequência abaixo:
@@ -318,121 +375,6 @@ curl -X POST -H "Content-Type: application/json" -d '{"jogador": "1", "resposta"
 Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
 # Quiz Game API
-
-## Fluxo de Teste no Chataigne
-
-Para testar o sistema de quiz no Chataigne, siga este fluxo de chamadas de API:
-
-### 1. Configuração Inicial
-
-1. **Iniciar Nova Partida**
-   ```
-   POST /api/nova_partida
-   ```
-   Este endpoint limpa o estado atual e prepara o sistema para uma nova configuração.
-
-2. **Ativar Modo de Seleção**
-   ```
-   POST /api/modo_selecao
-   ```
-   Muda o modo do sistema para seleção, permitindo escolher jogadores.
-
-3. **Configurar Partida**
-   ```
-   POST /api/configurar_partida
-   Parâmetros: jogadores=[id1,id2,id3], duracao_rodada=30, total_rodadas=4
-   ```
-   Define os jogadores participantes e configurações da partida.
-
-4. **Iniciar Partida**
-   ```
-   POST /api/iniciar_partida
-   ```
-   Inicia oficialmente a partida, alterando o status para "abertura".
-
-### 2. Fluxo de Rodada
-
-Para cada rodada, siga esta sequência:
-
-1. **Exibir Abertura (apenas na primeira rodada)**
-   ```
-   POST /api/abertura_rodada
-   ```
-   Exibe o vídeo/animação de abertura do programa.
-
-2. **Exibir Vinheta da Rodada**
-   ```
-   POST /api/vinheta_rodada
-   ```
-   Exibe a vinheta para a rodada atual.
-
-3. **Iniciar a Rodada**
-   ```
-   POST /api/iniciar_rodada
-   ```
-   Inicia a rodada atual, apresentando a pergunta e opções.
-
-4. **Enviar Respostas dos Jogadores**
-   ```
-   POST /api/enviar_resposta
-   Parâmetros: jogador=posição, resposta=letra/número, tempo=segundos
-   ```
-   Envia a resposta de um jogador. O parâmetro `jogador` representa a posição (1, 2 ou 3). A resposta pode ser A, B, C, D ou 1, 2, 3, 4.
-
-5. **Aguardar o Trigger de Finalização de Rodada**
-   Quando todos os jogadores responderem (ou o tempo acabar), o servidor enviará automaticamente um pulso OSC:
-   ```
-   /quiz/trigger/finaliza_rodada = 1 (seguido por 0 após 200ms)
-   ```
-   **IMPORTANTE**: Configure o Chataigne para reagir a este trigger, não chame manualmente um endpoint para finalizar a rodada.
-
-6. **Avançar para a Próxima Rodada**
-   Após o trigger, aguarde alguns segundos (2-3s) e então chame:
-   ```
-   POST /api/vinheta_rodada
-   ```
-   E depois de exibir a vinheta:
-   ```
-   POST /api/iniciar_rodada
-   ```
-
-### 3. Finalização
-
-Após a última rodada:
-
-1. **Verificar Resultado Final**
-   ```
-   GET /api/status
-   ```
-   Verifica o status final e pontuação dos jogadores.
-
-2. **Voltar ao Modo Apresentação**
-   ```
-   POST /api/modo_apresentacao
-   ```
-   Retorna ao modo de apresentação, exibindo o ranking geral.
-
-### Importante:
-
-- O sistema gerencia automaticamente o tempo de resposta para cada rodada.
-- Se um jogador não responder dentro do tempo configurado, o sistema considerará que ele não respondeu.
-- Após o tempo da rodada ou quando todos os jogadores responderem, o sistema muda automaticamente o status para "rodada_finalizada" e envia um trigger OSC.
-- **NÃO chame /api/finalizar_rodada manualmente** - este endpoint existe apenas para compatibilidade. O correto é reagir ao trigger OSC `/quiz/trigger/finaliza_rodada`.
-- É recomendável aguardar alguns segundos entre as chamadas API, especialmente entre o fim de uma rodada e o início da próxima.
-
-### Configuração Recomendada no Chataigne:
-
-1. **Adicione um módulo OSC** configurado para escutar na porta 8000.
-
-2. **Configure um trigger** que monitore o endereço `/quiz/trigger/finaliza_rodada`.
-
-3. **Crie uma sequência** que seja ativada quando o trigger for acionado (valor = 1):
-   - Aguarde 2-3 segundos (dê tempo para os jogadores verem a resposta correta)
-   - Chame `POST /api/vinheta_rodada`
-   - Aguarde a duração da vinheta (5-8 segundos)
-   - Chame `POST /api/iniciar_rodada`
-
-4. **Monitore o status do jogo** através do endereço OSC `/quiz/status` e `/quiz/rodada/atual` para controlar o fluxo do jogo.
 
 ## Comunicação OSC com Chataigne
 

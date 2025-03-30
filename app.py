@@ -923,105 +923,83 @@ def verificar_avancar():
 @app.route('/api/modo_apresentacao', methods=['POST'])
 def modo_apresentacao():
     """
-    Ativa o modo de apresentação e seleciona os 3 jogadores com maior pontuação.
-    Envia os dados via OSC para o Chataigne.
+    Configura o modo de apresentação (idle) exibindo o ranking dos melhores jogadores.
+    Este é o estado inicial do jogo, antes de iniciar uma nova partida.
     """
-    global modo_atual, tema_atual, status_jogo
-    modo_atual = "apresentacao"
-    status_jogo = "apresentacao"
+    global modo_atual, status_jogo
     
     try:
-        # Ordenar jogadores por pontuação total
-        jogadores_ordenados = sorted(jogadores_cadastrados, 
-                                key=lambda x: x.get('pontuacao_total', 0), 
-                                reverse=True)
+        app.logger.info("Entrando no modo de apresentação")
         
-        # Selecionar os 3 primeiros jogadores (ou menos se não houver 3)
-        top_jogadores = jogadores_ordenados[:3]
+        # Configurar modo de apresentação
+        modo_atual = "apresentacao"
+        status_jogo = "apresentacao"
         
-        # Pasta para salvar as imagens
-        pasta_imagens = "/Users/felipebrito/Documents/Resolume Wire/WebServer"
+        # Obter os 3 melhores jogadores (pelo total de pontuação acumulada)
+        top_jogadores = sorted(
+            jogadores_cadastrados,
+            key=lambda x: x["pontuacao_total"],
+            reverse=True
+        )[:3]
         
-        # Garantir que a pasta existe
-        os.makedirs(pasta_imagens, exist_ok=True)
+        # Enviar status via OSC
+        osc_client.send_message("/quiz/status", status_jogo)
+        app.logger.info(f"OSC enviado: /quiz/status = {status_jogo}")
         
-        # Salvar imagens dos jogadores
-        for i, jogador in enumerate(top_jogadores, 1):
-            try:
-                # Obter a imagem do jogador
-                response = requests.get(jogador["foto"], stream=True)
-                if response.status_code == 200:
-                    # Salvar a imagem com nome padronizado
-                    nome_arquivo = f"{i:02d}.jpg"
-                    caminho_completo = os.path.join(pasta_imagens, nome_arquivo)
-                    
-                    with open(caminho_completo, 'wb') as f:
-                        for chunk in response.iter_content(1024):
-                            f.write(chunk)
-                    
-                    app.logger.info(f"Imagem de {jogador['nome']} salva como {nome_arquivo}")
-                else:
-                    app.logger.error(f"Erro ao baixar imagem do jogador {jogador['nome']}: {response.status_code}")
-            except Exception as e:
-                app.logger.error(f"Erro ao processar imagem do jogador {jogador['nome']}: {str(e)}")
-        
-        # Logging dos top jogadores
-        app.logger.info("Top 3 jogadores do ranking:")
-        for i, jogador in enumerate(top_jogadores, 1):
-            app.logger.info(f"{i}º - {jogador['nome']}: {jogador['pontuacao_total']} pontos")
-        
-        # Enviar informações dos jogadores via OSC para o Chataigne
+        # Enviar os top jogadores via OSC
         enviar_top_jogadores_osc(top_jogadores)
         
-        # Enviar status do jogo via OSC
-        enviar_status_jogo_osc()
-        
-        # Retornar informações dos jogadores selecionados
         return jsonify({
             "status": "ok",
-            "modo": modo_atual,
-            "top_jogadores": [
-                {
-                    "id": jogador["id"],
-                    "nome": jogador["nome"],
-                    "pontuacao": jogador["pontuacao_total"],
-                    "foto": jogador["foto"],
-                    "foto_local": f"{i:02d}.jpg"
-                } for i, jogador in enumerate(top_jogadores, 1)
-            ],
-            "jogadores_disponiveis": len(jogadores_cadastrados)
+            "modo": "apresentacao",
+            "top_jogadores": top_jogadores
         })
+        
     except Exception as e:
-        app.logger.error(f"Erro ao processar modo apresentação: {str(e)}")
+        app.logger.error(f"Erro ao entrar no modo de apresentação: {str(e)}")
         import traceback
         app.logger.error(traceback.format_exc())
         return jsonify({
             "status": "erro",
-            "erro": f"Erro ao processar modo apresentação: {str(e)}"
+            "erro": f"Erro ao entrar no modo de apresentação: {str(e)}"
         }), 500
 
-# Funções auxiliares para envio OSC
-
 def enviar_top_jogadores_osc(jogadores):
-    """Envia informações dos top jogadores para o Chataigne via OSC"""
+    """
+    Envia informações dos top jogadores para o Chataigne via OSC.
+    """
     try:
-        # Enviar quantidade de jogadores
-        osc_client.send_message("/quiz/ranking/total", len(jogadores))
-        app.logger.info(f"OSC enviado: /quiz/ranking/total = {len(jogadores)}")
+        # Informar quantos jogadores estão sendo enviados
+        total = len(jogadores)
+        osc_client.send_message("/quiz/top/total", total)
+        app.logger.info(f"OSC enviado: /quiz/top/total = {total}")
         
-        # Enviar dados de cada jogador
-        for i, jogador in enumerate(jogadores, 1):
-            base_address = f"/quiz/ranking/jogador{i}"
-            osc_client.send_message(f"{base_address}/nome", jogador["nome"])
-            osc_client.send_message(f"{base_address}/pontos", jogador["pontuacao_total"])
-            osc_client.send_message(f"{base_address}/posicao", i)
+        # Enviar ranking como JSON
+        osc_client.send_message("/quiz/top/ranking", json.dumps([
+            {
+                "id": jogador["id"],
+                "nome": jogador["nome"],
+                "pontuacao": jogador["pontuacao_total"],
+                "posicao": i + 1,
+                "foto": jogador.get("foto", "")
+            } for i, jogador in enumerate(jogadores)
+        ]))
+        
+        # Enviar informações individuais dos jogadores
+        for i, jogador in enumerate(jogadores):
+            posicao = i + 1
+            osc_client.send_message(f"/quiz/top/jogador{posicao}/nome", jogador["nome"])
+            osc_client.send_message(f"/quiz/top/jogador{posicao}/pontos", jogador["pontuacao_total"])
+            osc_client.send_message(f"/quiz/top/jogador{posicao}/id", jogador["id"])
+            if "foto" in jogador:
+                osc_client.send_message(f"/quiz/top/jogador{posicao}/foto", jogador["foto"])
             
-            osc_client.send_message(f"{base_address}/foto", f"{i:02d}.jpg")
-            app.logger.info(f"OSC enviado: {base_address}/foto = {i:02d}.jpg")
+            app.logger.info(f"OSC enviado: Dados do top jogador {posicao} ({jogador['nome']})")
         
-        app.logger.info("Dados dos top jogadores enviados via OSC para o Chataigne")
+        app.logger.info("Dados dos top jogadores enviados via OSC")
+    
     except Exception as e:
-        app.logger.error(f"Erro ao enviar mensagem OSC: {str(e)}")
+        app.logger.error(f"Erro ao enviar top jogadores via OSC: {str(e)}")
         import traceback
         app.logger.error(traceback.format_exc())
 
