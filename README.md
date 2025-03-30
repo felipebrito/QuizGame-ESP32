@@ -510,3 +510,39 @@ Para desenvolver um frontend que se integre com este backend, considere implemen
      - "jogando" → Exibir pergunta e opções
      - "rodada_finalizada" → Exibir resultados da rodada
      - "jogo_finalizado" → Exibir resultado final 
+
+### Integração com Chataigne
+
+O sistema envia dados via OSC (Open Sound Control) para o Chataigne para sincronização. Os endpoints OSC principais são:
+
+- `/quiz/status`: Status atual do jogo ("aguardando", "abertura", "jogando", "rodada_finalizada", etc)
+- `/quiz/trigger/finaliza_rodada`: Trigger que envia um pulso (1 seguido de 0) quando a rodada é finalizada
+- `/quiz/ranking`: Envia o ranking atual como JSON
+- `/quiz/pergunta/texto`: Texto da pergunta atual
+- `/quiz/pergunta/opcoes`: Array JSON com todas as opções da pergunta
+- `/quiz/pergunta/opcao1`: Texto da primeira opção de resposta (alternativa A)
+- `/quiz/pergunta/opcao2`: Texto da segunda opção de resposta (alternativa B)
+- `/quiz/pergunta/opcao3`: Texto da terceira opção de resposta (alternativa C)
+- `/quiz/pergunta/resposta_correta`: Índice da resposta correta (1, 2 ou 3 para as opções A, B ou C respectivamente)
+- `/quiz/jogador1`: Status da resposta do jogador 1 (0 para errado, 1 para correto)
+- `/quiz/jogador2`: Status da resposta do jogador 2 (0 para errado, 1 para correto)
+- `/quiz/jogador3`: Status da resposta do jogador 3 (0 para errado, 1 para correto)
+- `/quiz/jogador4`: Status da resposta do jogador 4 (0 para errado, 1 para correto)
+
+#### Configuração do Chataigne
+
+Para configurar o Chataigne para receber estes sinais:
+
+1. Crie um módulo OSC e configure-o para escutar na porta 8000
+2. Configure um gatilho para `/quiz/trigger/finaliza_rodada`
+3. Quando o gatilho for acionado, o sistema deve chamar o endpoint `/api/vinheta_rodada` para avançar para a próxima rodada
+4. Configure rastreadores para os outros valores como status, pergunta e opções
+
+#### Notas importantes sobre as opções de resposta
+
+- O sistema agora limita todas as perguntas a exatamente 3 opções (A, B, C)
+- Cada opção é enviada individualmente via OSC para `/quiz/pergunta/opcao1`, `/quiz/pergunta/opcao2` e `/quiz/pergunta/opcao3`
+- O índice da resposta correta é enviado para `/quiz/pergunta/resposta_correta` (valor 1, 2 ou 3)
+- Por compatibilidade, todas as opções também são enviadas juntas em formato JSON para `/quiz/pergunta/opcoes`
+
+Você pode usar essas mensagens OSC individuais para cada opção para direcionar o texto para diferentes áreas na interface do Chataigne ou em software de visualização. 

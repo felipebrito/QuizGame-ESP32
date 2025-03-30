@@ -1381,7 +1381,6 @@ def iniciar_partida():
         "status_jogo": status_jogo
     })
 
-# Endpoint para iniciar uma rodada
 @app.route('/api/iniciar_rodada', methods=['POST'])
 def iniciar_rodada():
     """
@@ -1427,6 +1426,27 @@ def iniciar_rodada():
         
         pergunta_atual = partida["perguntas_selecionadas"][index_pergunta]
         
+        # Limitar a apenas 3 opções (A, B, C)
+        if len(pergunta_atual["opcoes"]) > 3:
+            # Se a resposta certa está além das 3 primeiras opções, troque-a com uma das 3 primeiras
+            if pergunta_atual["resposta_correta"] > 3:
+                # Salvar a opção correta
+                opcao_correta = pergunta_atual["opcoes"][pergunta_atual["resposta_correta"] - 1]
+                # Escolher aleatoriamente uma posição entre 1-3 para colocar a resposta correta
+                nova_posicao = random.randint(1, 3)
+                # Trocar a opção correta com uma das 3 primeiras
+                pergunta_atual["opcoes"][pergunta_atual["resposta_correta"] - 1] = pergunta_atual["opcoes"][nova_posicao - 1]
+                pergunta_atual["opcoes"][nova_posicao - 1] = opcao_correta
+                # Atualizar a posição da resposta correta
+                pergunta_atual["resposta_correta"] = nova_posicao
+            
+            # Manter apenas 3 opções
+            pergunta_atual["opcoes"] = pergunta_atual["opcoes"][:3]
+            
+            # Garantir que resposta_correta esteja entre 1-3
+            if pergunta_atual["resposta_correta"] > 3:
+                pergunta_atual["resposta_correta"] = random.randint(1, 3)
+        
         # Adicionar a pergunta atual ao estado da partida
         partida["pergunta_atual"] = pergunta_atual
         
@@ -1451,7 +1471,15 @@ def iniciar_rodada():
         
         # Enviar a pergunta atual via OSC
         osc_client.send_message("/quiz/pergunta/texto", pergunta_atual["pergunta"])
+        
+        # Enviar cada opção separadamente
+        for i, opcao in enumerate(pergunta_atual["opcoes"]):
+            osc_client.send_message(f"/quiz/pergunta/opcao{i+1}", opcao)
+        
+        # Ainda enviar todas as opções juntas para compatibilidade
         osc_client.send_message("/quiz/pergunta/opcoes", json.dumps(pergunta_atual["opcoes"]))
+        
+        # Enviar a resposta correta
         osc_client.send_message("/quiz/pergunta/resposta_correta", pergunta_atual["resposta_correta"])
         app.logger.info(f"OSC enviado: Pergunta da rodada {partida['rodada_atual']}")
         
@@ -1535,281 +1563,6 @@ def iniciar_rodada():
         return jsonify({
             "status": "erro",
             "erro": f"Erro ao iniciar rodada: {str(e)}"
-        }), 500
-
-# Endpoint para obter o status atual do jogo
-@app.route('/api/status', methods=['GET'])
-def obter_status():
-    """
-    Retorna o status atual do jogo.
-    """
-    status = {
-        "modo": modo_atual,
-        "tema": tema_atual,
-        "status_jogo": status_jogo,
-        "partida_status": partida["status"],
-        "rodada_atual": partida["rodada_atual"],
-        "total_rodadas": partida["total_rodadas"],
-        "jogadores_disponiveis": len(jogadores_cadastrados),
-        "participantes_ativos": len(partida["participantes"]),
-        "timestamp": time.time()
-    }
-    
-    # Se estiver em uma partida ativa, adicionar informações adicionais
-    if modo_atual == "ativo" and partida["status"] != "finalizada":
-        # Adicionar informações dos participantes
-        participantes_ordenados = sorted(
-            partida["participantes"], 
-            key=lambda x: x["pontuacao"], 
-            reverse=True
-        )
-        
-        status["participantes"] = [
-            {
-                "id": p["id"],
-                "nome": p["nome"],
-                "pontuacao": p["pontuacao"]
-            } for p in participantes_ordenados
-        ]
-        
-        # Adicionar informações da rodada atual se estiver em uma rodada ativa
-        if partida["status"] == "rodada_ativa" and partida["rodada_atual"] > 0:
-            pergunta_atual = partida["perguntas_selecionadas"][partida["rodada_atual"] - 1]
-            status["pergunta_atual"] = {
-                "texto": pergunta_atual["pergunta"],
-                "opcoes": pergunta_atual["opcoes"]
-            }
-            
-            # Adicionar tempo restante da rodada
-            tempo_decorrido = time.time() - partida.get("tempo_inicio", 0)
-            tempo_total = partida["duracao_rodada"]
-            tempo_restante = max(0, tempo_total - tempo_decorrido)
-            status["tempo_restante"] = tempo_restante
-    
-    return jsonify(status)
-
-# Endpoint para iniciar uma nova partida (atalho para o fluxo completo)
-@app.route('/api/nova_partida', methods=['POST'])
-def nova_partida():
-    """
-    Endpoint para iniciar uma nova partida.
-    Apenas muda o status do jogo para 'nova_partida'.
-    Os jogadores serão definidos no endpoint /api/configurar_partida.
-    """
-    global modo_atual, status_jogo
-    
-    try:
-        app.logger.info("Solicitação para nova partida recebida")
-        
-        # Apenas mudar o status
-        modo_atual = "selecao"
-        status_jogo = "nova_partida"
-        
-        # Limpar dados da partida anterior
-        partida["status"] = "nova_partida"
-        partida["participantes"] = []
-        partida["rodada_atual"] = 0
-        partida["total_rodadas"] = 0
-        partida["respostas_recebidas"] = set()
-        partida["respostas"] = {}
-        partida["avancar_rodada"] = False
-        
-        # Enviar status do jogo via OSC
-        enviar_status_jogo_osc()
-        
-        return jsonify({
-            "status": "ok",
-            "mensagem": "Nova partida iniciada"
-        })
-        
-    except Exception as e:
-        app.logger.error(f"Erro ao iniciar nova partida: {str(e)}")
-        import traceback
-        app.logger.error(traceback.format_exc())
-        return jsonify({
-            "status": "erro",
-            "erro": f"Erro ao iniciar nova partida: {str(e)}"
-        }), 500
-
-# Endpoint para resetar o jogo
-@app.route('/api/reset', methods=['POST'])
-def reset_jogo():
-    """
-    Reseta o jogo para o modo de apresentação.
-    """
-    global modo_atual, status_jogo
-    
-    # Resetar para o modo de apresentação
-    modo_atual = "apresentacao"
-    status_jogo = "apresentacao"
-    
-    # Resetar a partida atual
-    partida["status"] = "aguardando"
-    partida["participantes"] = []
-    partida["rodada_atual"] = 0
-    partida["total_rodadas"] = 0
-    partida["respostas_recebidas"] = set()
-    partida["respostas"] = {}
-    
-    # Enviar status do jogo via OSC
-    enviar_status_jogo_osc()
-    
-    # Chamar o endpoint de modo apresentação para atualizar o ranking
-    return modo_apresentacao()
-
-# Adicionando novas funções OSC
-def enviar_jogadores_partida_osc(jogadores):
-    """Envia informações dos jogadores da partida para o Chataigne via OSC"""
-    try:
-        # Enviar quantidade de jogadores
-        osc_client.send_message("/quiz/partida/jogadores/total", len(jogadores))
-        app.logger.info(f"OSC enviado: /quiz/partida/jogadores/total = {len(jogadores)}")
-        
-        # Enviar dados de cada jogador
-        for i, jogador in enumerate(jogadores, 1):
-            base_address = f"/quiz/partida/jogador{i}"
-            osc_client.send_message(f"{base_address}/id", jogador["id"])
-            osc_client.send_message(f"{base_address}/nome", jogador["nome"])
-            osc_client.send_message(f"{base_address}/pontos", 0)  # Inicialmente zero
-            osc_client.send_message(f"{base_address}/posicao", i)
-            
-            app.logger.info(f"OSC enviado: Jogador {i} - {jogador['nome']} (ID: {jogador['id']}) - 0 pontos")
-        
-        app.logger.info("Dados dos jogadores da partida enviados via OSC para o Chataigne")
-    except Exception as e:
-        app.logger.error(f"Erro ao enviar informações dos jogadores via OSC: {str(e)}")
-        import traceback
-        app.logger.error(traceback.format_exc())
-
-def enviar_pontuacoes_atuais_osc():
-    """Envia as pontuações atuais dos jogadores na partida para o Chataigne via OSC"""
-    try:
-        if not partida["participantes"]:
-            return
-            
-        # Ordenar participantes por pontuação
-        participantes_ordenados = sorted(
-            partida["participantes"], 
-            key=lambda x: x["pontuacao"], 
-            reverse=True
-        )
-        
-        # Enviar dados de cada jogador
-        for i, jogador in enumerate(participantes_ordenados, 1):
-            base_address = f"/quiz/partida/jogador{i}"
-            osc_client.send_message(f"{base_address}/nome", jogador["nome"])
-            osc_client.send_message(f"{base_address}/pontos", jogador["pontuacao"])
-            osc_client.send_message(f"{base_address}/posicao", i)
-            osc_client.send_message(f"{base_address}/id", jogador["id"])
-            
-            app.logger.info(f"OSC enviado: Jogador {i} - {jogador['nome']} - {jogador['pontuacao']} pontos")
-        
-        # Enviar quantos jogadores já responderam
-        total_respostas = len(partida.get("respostas_recebidas", set()))
-        osc_client.send_message("/quiz/partida/respostas", total_respostas)
-        app.logger.info(f"OSC enviado: Total de respostas = {total_respostas}")
-        
-        app.logger.info("Pontuações atualizadas enviadas via OSC")
-    except Exception as e:
-        app.logger.error(f"Erro ao enviar pontuações via OSC: {str(e)}")
-        import traceback
-        app.logger.error(traceback.format_exc())
-
-def enviar_trigger_finaliza_rodada_osc():
-    """Envia um trigger OSC para finalizar a rodada atual"""
-    global status_jogo
-    
-    try:
-        # Atualizar status para rodada finalizada
-        status_jogo = "rodada_finalizada"
-        partida["status"] = "aguardando_rodada"
-        
-        osc_client.send_message("/quiz/trigger/finaliza_rodada", 1)
-        app.logger.info("OSC enviado: Trigger para finalizar rodada")
-        
-        # Enviar os status atualizados
-        osc_client.send_message("/quiz/status", "rodada_finalizada")
-        app.logger.info("OSC enviado: Status atualizado para rodada_finalizada")
-        
-        # Informar qual era a resposta correta
-        pergunta_atual = partida.get("pergunta_atual", {})
-        resposta_correta = pergunta_atual.get("resposta_correta", 0)
-        osc_client.send_message("/quiz/resposta_correta", resposta_correta)
-        app.logger.info(f"OSC enviado: Resposta correta = {resposta_correta}")
-        
-        # Enviar o ranking atualizado
-        ranking = calcular_ranking_atual()
-        for i, jogador in enumerate(ranking):
-            posicao = i + 1
-            osc_client.send_message(f"/quiz/ranking/jogador{posicao}/nome", jogador["nome"])
-            osc_client.send_message(f"/quiz/ranking/jogador{posicao}/pontos", jogador["pontuacao"])
-            app.logger.info(f"OSC enviado: Ranking jogador {posicao} = {jogador['nome']} com {jogador['pontuacao']} pontos")
-            
-        # Informar que todos responderam
-        osc_client.send_message("/quiz/todos_responderam", 1)
-        app.logger.info("OSC enviado: Todos os jogadores responderam")
-        
-        # Enviar sinais adicionais
-        osc_client.send_message("/quiz/rodada/finalizada", 1)
-        app.logger.info("OSC enviado: Sinais de finalização de rodada")
-        
-        # Informar tempo restante (0 quando finalizado)
-        osc_client.send_message("/quiz/tempo_restante", 0.0)
-        app.logger.info("OSC enviado: Tempo restante = 0.00s")
-        
-        # Informar qual seria a próxima rodada
-        proxima_rodada = partida["rodada_atual"] + 1
-        osc_client.send_message("/quiz/proxima_rodada", proxima_rodada)
-        app.logger.info(f"OSC enviado: Próxima rodada seria a {proxima_rodada}")
-        
-        # Criar um thread para retornar o trigger para 0 após um breve atraso
-        # Isso cria um pulso visível no Chataigne
-        def reset_trigger():
-            time.sleep(0.2)  # 200ms delay para criar um pulso visível
-            osc_client.send_message("/quiz/trigger/finaliza_rodada", 0)
-            app.logger.info("OSC enviado: Reset do trigger de finalização")
-            
-        threading.Thread(target=reset_trigger).start()
-        
-    except Exception as e:
-        app.logger.error(f"Erro ao enviar trigger de finalização via OSC: {str(e)}")
-        import traceback
-        app.logger.error(traceback.format_exc())
-
-@app.route('/api/abertura_rodada', methods=['POST'])
-def abertura_rodada():
-    """
-    Endpoint para indicar que a abertura do programa/show está sendo exibida.
-    Este é um estado intermediário entre iniciar a partida e a vinheta da rodada.
-    """
-    global status_jogo
-    
-    try:
-        app.logger.info("Abertura do programa em exibição")
-        
-        # Atualizar o status para Video abertura
-        status_jogo = "Video abertura"
-        partida["status"] = "abertura_programa"
-        
-        # Enviar status via OSC
-        osc_client.send_message("/quiz/status", status_jogo)
-        app.logger.info(f"OSC enviado: /quiz/status = {status_jogo}")
-        
-        return jsonify({
-            "status": "ok",
-            "mensagem": "Abertura do programa em exibição",
-            "rodada_atual": partida["rodada_atual"],
-            "total_rodadas": partida["total_rodadas"],
-            "status_jogo": status_jogo
-        })
-        
-    except Exception as e:
-        app.logger.error(f"Erro ao processar abertura: {str(e)}")
-        import traceback
-        app.logger.error(traceback.format_exc())
-        return jsonify({
-            "status": "erro",
-            "erro": f"Erro ao processar abertura: {str(e)}"
         }), 500
 
 @app.route('/api/vinheta_rodada', methods=['POST'])
