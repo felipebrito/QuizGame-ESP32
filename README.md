@@ -379,17 +379,22 @@ Para cada rodada, siga esta sequência:
    ```
    Envia a resposta de um jogador. O parâmetro `jogador` representa a posição (1, 2 ou 3). A resposta pode ser A, B, C, D ou 1, 2, 3, 4.
 
-5. **Verificar Status da Rodada**
+5. **Aguardar o Trigger de Finalização de Rodada**
+   Quando todos os jogadores responderem (ou o tempo acabar), o servidor enviará automaticamente um pulso OSC:
    ```
-   GET /api/status
+   /quiz/trigger/finaliza_rodada = 1 (seguido por 0 após 200ms)
    ```
-   Verifica o status atual da partida e rodada.
+   **IMPORTANTE**: Configure o Chataigne para reagir a este trigger, não chame manualmente um endpoint para finalizar a rodada.
 
-6. **Verificar se Pode Avançar para Próxima Rodada**
+6. **Avançar para a Próxima Rodada**
+   Após o trigger, aguarde alguns segundos (2-3s) e então chame:
    ```
-   POST /api/verificar_avancar
+   POST /api/vinheta_rodada
    ```
-   Verifica se todos responderam e se é possível avançar para a próxima rodada.
+   E depois de exibir a vinheta:
+   ```
+   POST /api/iniciar_rodada
+   ```
 
 ### 3. Finalização
 
@@ -411,23 +416,23 @@ Após a última rodada:
 
 - O sistema gerencia automaticamente o tempo de resposta para cada rodada.
 - Se um jogador não responder dentro do tempo configurado, o sistema considerará que ele não respondeu.
-- Após o tempo da rodada ou quando todos os jogadores responderem, o sistema muda automaticamente o status para "rodada_finalizada".
+- Após o tempo da rodada ou quando todos os jogadores responderem, o sistema muda automaticamente o status para "rodada_finalizada" e envia um trigger OSC.
+- **NÃO chame /api/finalizar_rodada manualmente** - este endpoint existe apenas para compatibilidade. O correto é reagir ao trigger OSC `/quiz/trigger/finaliza_rodada`.
 - É recomendável aguardar alguns segundos entre as chamadas API, especialmente entre o fim de uma rodada e o início da próxima.
 
-### Exemplo de Sequência em Chataigne:
+### Configuração Recomendada no Chataigne:
 
-1. Limpar estado: `POST /api/nova_partida`
-2. Modo seleção: `POST /api/modo_selecao`
-3. Configurar partida com 3 jogadores: `POST /api/configurar_partida` (com os parâmetros apropriados)
-4. Iniciar a partida: `POST /api/iniciar_partida`
-5. Exibir abertura: `POST /api/abertura_rodada`
-6. Para cada rodada (1 a N):
-   - Exibir vinheta: `POST /api/vinheta_rodada`
-   - Iniciar rodada: `POST /api/iniciar_rodada`
-   - Enviar respostas dos jogadores: `POST /api/enviar_resposta` (uma chamada para cada jogador)
-   - Verificar status: `GET /api/status`
-   - Verificar se pode avançar: `POST /api/verificar_avancar`
-7. Finalizar exibindo resultado: `POST /api/modo_apresentacao`
+1. **Adicione um módulo OSC** configurado para escutar na porta 8000.
+
+2. **Configure um trigger** que monitore o endereço `/quiz/trigger/finaliza_rodada`.
+
+3. **Crie uma sequência** que seja ativada quando o trigger for acionado (valor = 1):
+   - Aguarde 2-3 segundos (dê tempo para os jogadores verem a resposta correta)
+   - Chame `POST /api/vinheta_rodada`
+   - Aguarde a duração da vinheta (5-8 segundos)
+   - Chame `POST /api/iniciar_rodada`
+
+4. **Monitore o status do jogo** através do endereço OSC `/quiz/status` e `/quiz/rodada/atual` para controlar o fluxo do jogo.
 
 ## Comunicação OSC com Chataigne
 
@@ -450,6 +455,12 @@ O backend envia mensagens OSC para o Chataigne para sincronizar o estado do jogo
 | `/quiz/partida/jogador{N}/id` | ID do jogador na posição N do ranking | 2 |
 | `/quiz/ranking/total` | Número de jogadores no ranking geral | 3 |
 | `/quiz/ranking/jogador{N}/foto` | Nome do arquivo de foto do jogador N no ranking | "01.jpg" |
+| `/quiz/trigger/finaliza_rodada` | **Trigger de finalização da rodada** | 1 (seguido por 0 após 200ms) |
+| `/quiz/resposta_correta` | Número da resposta correta (1-4) | 3 |
+| `/quiz/todos_responderam` | Indica se todos os jogadores responderam | 1 |
+| `/quiz/rodada/finalizada` | Indica que a rodada foi finalizada | 1 |
+| `/quiz/tempo_restante` | Tempo restante na rodada atual | 0.0 |
+| `/quiz/proxima_rodada` | Número da próxima rodada | 2 |
 
 ### Eventos Disparados pelo Backend
 
@@ -457,7 +468,8 @@ Os seguintes eventos são disparados automaticamente pelo backend e podem ser mo
 
 1. **Finalização Automática da Rodada**
    - Quando o tempo da rodada acaba ou todos os jogadores respondem
-   - Mensagens OSC: `/quiz/status = rodada_finalizada` e trigger para finalizar rodada
+   - Mensagens OSC: `/quiz/status = rodada_finalizada` e `/quiz/trigger/finaliza_rodada = 1`
+   - **AÇÃO RECOMENDADA**: Aguardar 2-3 segundos e chamar `/api/vinheta_rodada`
 
 2. **Atualização de Ranking**
    - Quando algum jogador responde, o ranking é atualizado e enviado

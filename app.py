@@ -8,6 +8,7 @@ import requests
 from pythonosc import udp_client
 import sqlite3
 from datetime import datetime
+import threading
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 # Modificando a configuração do Jinja2 para permitir operadores ternários
@@ -318,6 +319,7 @@ def enviar_resposta_http_route():
         jogador = None
         resposta = None
         tempo = 0
+        tempo_decorrido = 0  # Inicialização da variável tempo_decorrido com valor padrão
         
         # Verificar primeiro no form data
         if 'jogador' in request.form:
@@ -423,16 +425,17 @@ def enviar_resposta_http_route():
         # Registrar a resposta
         app.logger.info(f"Jogador {nome_jogador} (ID {jogador_id}) respondeu {resposta}")
         partida["respostas_recebidas"].add(jogador_id)
-        partida["respostas"][jogador_id] = resposta
         
         # Calcular a pontuação
         pontos = 0
-        resposta_correta = partida["pergunta_atual"]["resposta_correta"]
+        rodada_atual = partida["rodada_atual"]
+        pergunta_atual = partida["pergunta_atual"]
+        pergunta_id = pergunta_atual["id"]
+        resposta_correta = pergunta_atual["resposta_correta"]
         correta = resposta == resposta_correta
         
         # Se a resposta estiver correta, calcular pontuação com base no tempo
         if correta:
-            tempo_decorrido = 0
             try:
                 # Verificar se existe 'inicio_rodada' ou 'tempo_inicio' no dicionário partida
                 if "inicio_rodada" in partida:
@@ -457,12 +460,66 @@ def enviar_resposta_http_route():
             
             # Cálculo de pontos: base de 50 pontos + até 50 pontos por rapidez
             pontos = 50 + int(50 * fator_tempo)
+        else:
+            # Caso a resposta seja incorreta, certifique-se de que tempo_decorrido tenha um valor
+            if tempo > 0:
+                tempo_decorrido = tempo
+            elif "inicio_rodada" in partida:
+                tempo_decorrido = time.time() - partida["inicio_rodada"]
+            elif "tempo_inicio" in partida:
+                tempo_decorrido = time.time() - partida["tempo_inicio"]
+            # Já temos um valor padrão definido no início da função
             
+        # Registrar a resposta no objeto partida
+        if "respostas" not in partida:
+            partida["respostas"] = {}
+            
+        partida["respostas"][jogador_id] = {
+            "resposta": resposta,
+            "correta": correta,
+            "tempo": tempo_decorrido,
+            "pontos": pontos
+        }
+        
         # Atualizar a pontuação do jogador
         for participante in partida["participantes"]:
             if str(participante["id"]) == jogador_id:
                 participante["pontuacao"] += pontos
                 break
+                
+        # Registrar a resposta no banco de dados
+        global partida_db_id
+        if partida_db_id:
+            app.logger.info(f"Registrando resposta no banco de dados para partida {partida_db_id}")
+            try:
+                registrar_resposta(
+                    partida_db_id,
+                    rodada_atual,
+                    int(jogador_id),
+                    pergunta_id,
+                    resposta,
+                    correta,
+                    tempo_decorrido,
+                    pontos
+                )
+                
+                # Também atualizar a pontuação do jogador no banco de dados
+                for participante in partida["participantes"]:
+                    if str(participante["id"]) == jogador_id:
+                        atualizar_pontuacao_jogador(
+                            partida_db_id,
+                            int(jogador_id),
+                            participante["pontuacao"]
+                        )
+                        break
+                        
+                app.logger.info(f"Resposta e pontuação registradas no banco de dados com sucesso")
+            except Exception as e:
+                app.logger.error(f"Erro ao registrar no banco de dados: {str(e)}")
+                import traceback
+                app.logger.error(traceback.format_exc())
+        else:
+            app.logger.warning("Não foi possível registrar a resposta no banco de dados: partida_db_id não definido")
                 
         # Calcular o ranking atual
         ranking = calcular_ranking_atual()
@@ -1402,7 +1459,6 @@ def iniciar_rodada():
         enviar_pontuacoes_atuais_osc()
         
         # Iniciar um temporizador para finalizar a rodada automaticamente
-        import threading
         def finalizar_rodada_automaticamente():
             # Espera o tempo da rodada
             time.sleep(partida["duracao_rodada"])
@@ -1660,7 +1716,7 @@ def enviar_pontuacoes_atuais_osc():
         app.logger.error(traceback.format_exc())
 
 def enviar_trigger_finaliza_rodada_osc():
-    """Envia um trigger para o Chataigne indicando que a rodada pode ser finalizada"""
+    """Envia um trigger OSC para finalizar a rodada atual"""
     global status_jogo
     
     try:
@@ -1668,49 +1724,52 @@ def enviar_trigger_finaliza_rodada_osc():
         status_jogo = "rodada_finalizada"
         partida["status"] = "aguardando_rodada"
         
-        # Enviar trigger para finalizar a rodada
         osc_client.send_message("/quiz/trigger/finaliza_rodada", 1)
         app.logger.info("OSC enviado: Trigger para finalizar rodada")
         
-        # Enviar o novo status via OSC
-        osc_client.send_message("/quiz/status", status_jogo)
-        app.logger.info(f"OSC enviado: Status atualizado para {status_jogo}")
+        # Enviar os status atualizados
+        osc_client.send_message("/quiz/status", "rodada_finalizada")
+        app.logger.info("OSC enviado: Status atualizado para rodada_finalizada")
         
-        # Enviar informações sobre a resposta correta
+        # Informar qual era a resposta correta
         pergunta_atual = partida.get("pergunta_atual", {})
         resposta_correta = pergunta_atual.get("resposta_correta", 0)
-        osc_client.send_message("/quiz/resposta/correta", resposta_correta)
+        osc_client.send_message("/quiz/resposta_correta", resposta_correta)
         app.logger.info(f"OSC enviado: Resposta correta = {resposta_correta}")
         
-        # Enviar informações sobre o ranking atual
+        # Enviar o ranking atualizado
         ranking = calcular_ranking_atual()
         for i, jogador in enumerate(ranking):
             posicao = i + 1
             osc_client.send_message(f"/quiz/ranking/jogador{posicao}/nome", jogador["nome"])
             osc_client.send_message(f"/quiz/ranking/jogador{posicao}/pontos", jogador["pontuacao"])
-            osc_client.send_message(f"/quiz/ranking/jogador{posicao}/posicao", posicao)
             app.logger.info(f"OSC enviado: Ranking jogador {posicao} = {jogador['nome']} com {jogador['pontuacao']} pontos")
             
-        # Enviar informações adicionais
-        osc_client.send_message("/quiz/rodada/todos_responderam", 1)
-        app.logger.info(f"OSC enviado: Todos os jogadores responderam")
+        # Informar que todos responderam
+        osc_client.send_message("/quiz/todos_responderam", 1)
+        app.logger.info("OSC enviado: Todos os jogadores responderam")
         
-        # Enviar sinais específicos para o Chataigne saber avançar
+        # Enviar sinais adicionais
         osc_client.send_message("/quiz/rodada/finalizada", 1)
-        osc_client.send_message("/quiz/rodada/pode_avancar", 1)
-        app.logger.info(f"OSC enviado: Sinais de finalização de rodada")
+        app.logger.info("OSC enviado: Sinais de finalização de rodada")
         
-        # Enviar tempo restante (0 = acabou o tempo)
-        tempo_decorrido = time.time() - partida.get("tempo_inicio", 0)
-        tempo_total = partida["duracao_rodada"]
-        tempo_restante = max(0, tempo_total - tempo_decorrido)
-        osc_client.send_message("/quiz/rodada/tempo_restante", tempo_restante)
-        app.logger.info(f"OSC enviado: Tempo restante = {tempo_restante:.2f}s")
+        # Informar tempo restante (0 quando finalizado)
+        osc_client.send_message("/quiz/tempo_restante", 0.0)
+        app.logger.info("OSC enviado: Tempo restante = 0.00s")
         
-        # Enviar rodada atual e total
-        osc_client.send_message("/quiz/rodada/atual", partida["rodada_atual"])
-        osc_client.send_message("/quiz/rodada/proxima", min(partida["rodada_atual"] + 1, partida["total_rodadas"]))
-        app.logger.info(f"OSC enviado: Próxima rodada seria a {min(partida['rodada_atual'] + 1, partida['total_rodadas'])}")
+        # Informar qual seria a próxima rodada
+        proxima_rodada = partida["rodada_atual"] + 1
+        osc_client.send_message("/quiz/proxima_rodada", proxima_rodada)
+        app.logger.info(f"OSC enviado: Próxima rodada seria a {proxima_rodada}")
+        
+        # Criar um thread para retornar o trigger para 0 após um breve atraso
+        # Isso cria um pulso visível no Chataigne
+        def reset_trigger():
+            time.sleep(0.2)  # 200ms delay para criar um pulso visível
+            osc_client.send_message("/quiz/trigger/finaliza_rodada", 0)
+            app.logger.info("OSC enviado: Reset do trigger de finalização")
+            
+        threading.Thread(target=reset_trigger).start()
         
     except Exception as e:
         app.logger.error(f"Erro ao enviar trigger de finalização via OSC: {str(e)}")
@@ -2032,6 +2091,43 @@ def before_request():
         init_db()
         app.logger.info("Banco de dados inicializado para a aplicação")
         db_initialized = True
+
+# Adicionar endpoint para finalizar rodada (apenas para compatibilidade com Chataigne)
+@app.route('/api/finalizar_rodada', methods=['POST'])
+def finalizar_rodada_http():
+    """Endpoint para confirmar a finalização de uma rodada via HTTP.
+    Este endpoint existe principalmente por compatibilidade com o Chataigne.
+    A finalização da rodada já é tratada automaticamente pelo backend quando todos respondem
+    ou o tempo acaba, e um trigger OSC é enviado."""
+    
+    global status_jogo
+    
+    try:
+        app.logger.info("Recebida solicitação para finalizar rodada via HTTP")
+        
+        # Verificar se a rodada já está finalizada
+        if partida["status"] != "aguardando_rodada" or status_jogo != "rodada_finalizada":
+            # Se a rodada ainda não estiver finalizada, finalizá-la
+            status_jogo = "rodada_finalizada"
+            partida["status"] = "aguardando_rodada"
+            
+            # Enviar todos os sinais necessários via OSC
+            enviar_trigger_finaliza_rodada_osc()
+        
+        # Retornar o status atual
+        return jsonify({
+            "status": "ok",
+            "mensagem": "Rodada finalizada com sucesso",
+            "rodada_atual": partida["rodada_atual"],
+            "total_rodadas": partida["total_rodadas"],
+            "proximo_passo": "Chamar /api/vinheta_rodada para iniciar a próxima rodada"
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Erro ao finalizar rodada via HTTP: {str(e)}")
+        import traceback
+        app.logger.error(traceback.format_exc())
+        return jsonify({"status": "erro", "erro": f"Erro ao finalizar rodada: {str(e)}"}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
