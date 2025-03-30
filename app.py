@@ -1250,7 +1250,7 @@ def configurar_partida():
         enviar_status_jogo_osc()
         
         # Enviar informações dos jogadores selecionados via OSC
-        enviar_jogadores_partida_osc(participantes)
+        enviar_jogadores_partida_osc()
         
         return jsonify({
             "status": "ok",
@@ -1881,6 +1881,193 @@ def finalizar_rodada_http():
         import traceback
         app.logger.error(traceback.format_exc())
         return jsonify({"status": "erro", "erro": f"Erro ao finalizar rodada: {str(e)}"}), 500
+
+@app.route('/api/nova_partida', methods=['POST'])
+def nova_partida():
+    """
+    Cria uma nova partida, resetando o estado do jogo.
+    Este endpoint deve ser chamado antes de configurar uma nova partida.
+    """
+    global partida, status_jogo, partida_db_id
+    
+    try:
+        app.logger.info("Iniciando nova partida")
+        
+        # Reset do estado da partida
+        partida = {
+            "status": "aguardando",
+            "participantes": [],
+            "rodada_atual": 0,
+            "total_rodadas": 0,
+            "duracao_rodada": 30.0,
+            "perguntas_selecionadas": [],
+            "pergunta_atual": None,
+            "respostas_recebidas": set(),
+            "respostas": {},
+            "inicio_rodada": 0,
+            "fim_rodada": 0,
+            "avancar_rodada": False,
+            "tema": "default",
+            "participantes_ativos": 0
+        }
+        
+        # Reset do status do jogo
+        status_jogo = "aguardando"
+        
+        # Reset do ID da partida no banco de dados
+        partida_db_id = None
+        
+        # Enviar status atualizado via OSC
+        osc_client.send_message("/quiz/status", status_jogo)
+        app.logger.info(f"OSC enviado: /quiz/status = {status_jogo}")
+        
+        return jsonify({
+            "status": "ok",
+            "mensagem": "Nova partida iniciada com sucesso",
+            "status_jogo": status_jogo
+        })
+    
+    except Exception as e:
+        app.logger.error(f"Erro ao iniciar nova partida: {str(e)}")
+        import traceback
+        app.logger.error(traceback.format_exc())
+        return jsonify({
+            "status": "erro",
+            "erro": f"Erro ao iniciar nova partida: {str(e)}"
+        }), 500
+
+def enviar_jogadores_partida_osc():
+    """
+    Envia informações dos jogadores da partida atual via OSC.
+    """
+    global partida
+    
+    if not partida or not partida.get("participantes"):
+        app.logger.warning("Não há participantes para enviar via OSC")
+        return
+    
+    try:
+        # Enviar total de jogadores
+        total_jogadores = len(partida["participantes"])
+        osc_client.send_message("/quiz/jogadores/total", total_jogadores)
+        app.logger.info(f"OSC enviado: /quiz/jogadores/total = {total_jogadores}")
+        
+        # Enviar informações individuais dos jogadores
+        for i, jogador in enumerate(partida["participantes"]):
+            posicao = i + 1
+            osc_client.send_message(f"/quiz/jogador{posicao}/id", jogador["id"])
+            osc_client.send_message(f"/quiz/jogador{posicao}/nome", jogador["nome"])
+            osc_client.send_message(f"/quiz/jogador{posicao}/pontos", jogador["pontuacao"])
+            osc_client.send_message(f"/quiz/jogador{posicao}/posicao", posicao)
+            
+            app.logger.info(f"OSC enviado: Dados do jogador {posicao} ({jogador['nome']})")
+        
+        app.logger.info("Dados de todos os jogadores enviados via OSC")
+    
+    except Exception as e:
+        app.logger.error(f"Erro ao enviar jogadores via OSC: {str(e)}")
+        import traceback
+        app.logger.error(traceback.format_exc())
+
+def enviar_pontuacoes_atuais_osc():
+    """
+    Envia as pontuações atuais dos jogadores via OSC para o Chataigne.
+    """
+    if not partida or not partida.get("participantes"):
+        app.logger.warning("Não há participantes para enviar pontuações via OSC")
+        return
+    
+    try:
+        # Calcular o ranking atual (ordenado por pontuação)
+        ranking = sorted(
+            partida["participantes"],
+            key=lambda x: x["pontuacao"],
+            reverse=True
+        )
+        
+        # Enviar o ranking atual como JSON
+        osc_client.send_message("/quiz/ranking", json.dumps([
+            {
+                "id": p["id"],
+                "nome": p["nome"],
+                "pontuacao": p["pontuacao"],
+                "posicao": i + 1
+            } for i, p in enumerate(ranking)
+        ]))
+        
+        # Enviar informações individuais dos jogadores
+        for i, jogador in enumerate(ranking):
+            posicao = i + 1
+            osc_client.send_message(f"/quiz/partida/jogador{posicao}/nome", jogador["nome"])
+            osc_client.send_message(f"/quiz/partida/jogador{posicao}/pontos", jogador["pontuacao"])
+            osc_client.send_message(f"/quiz/partida/jogador{posicao}/posicao", posicao)
+            osc_client.send_message(f"/quiz/partida/jogador{posicao}/id", jogador["id"])
+        
+        app.logger.info("Pontuações atuais enviadas via OSC")
+    
+    except Exception as e:
+        app.logger.error(f"Erro ao enviar pontuações via OSC: {str(e)}")
+        import traceback
+        app.logger.error(traceback.format_exc())
+
+def enviar_trigger_finaliza_rodada_osc():
+    """
+    Envia um sinal de trigger OSC para indicar que a rodada foi finalizada.
+    Este sinal é um pulso (1 seguido de 0) enviado para o endereço /quiz/trigger/finaliza_rodada.
+    O Chataigne deve reagir a este pulso chamando a próxima etapa no fluxo do jogo.
+    """
+    global status_jogo, partida
+    
+    try:
+        # Atualizar status do jogo
+        status_jogo = "rodada_finalizada"
+        partida["status"] = "aguardando_rodada"
+        
+        # Enviar status atualizado
+        osc_client.send_message("/quiz/status", status_jogo)
+        app.logger.info(f"OSC enviado: /quiz/status = {status_jogo}")
+        
+        # Enviar informações da rodada finalizada
+        osc_client.send_message("/quiz/rodada/atual", partida["rodada_atual"])
+        osc_client.send_message("/quiz/rodada/total", partida["total_rodadas"])
+        
+        # Enviar sinal da resposta correta
+        if "pergunta_atual" in partida and partida["pergunta_atual"]:
+            osc_client.send_message("/quiz/resposta_correta", partida["pergunta_atual"]["resposta_correta"])
+            
+        # Enviar ranking atualizado
+        ranking = sorted(partida["participantes"], key=lambda x: x["pontuacao"], reverse=True)
+        osc_client.send_message("/quiz/ranking", json.dumps([
+            {
+                "id": p["id"],
+                "nome": p["nome"],
+                "pontuacao": p["pontuacao"],
+                "posicao": i + 1
+            } for i, p in enumerate(ranking)
+        ]))
+        
+        # Enviar informação que todos responderam
+        osc_client.send_message("/quiz/todos_responderam", 1)
+        
+        # Enviar o trigger como um pulso (1 seguido de 0 após um breve delay)
+        osc_client.send_message("/quiz/trigger/finaliza_rodada", 1)
+        app.logger.info("OSC enviado: Trigger de finalização de rodada (1)")
+        
+        # Criar uma thread para enviar o reset do trigger após um breve delay
+        def reset_trigger():
+            time.sleep(0.2)  # 200ms de delay para criar um pulso visível
+            osc_client.send_message("/quiz/trigger/finaliza_rodada", 0)
+            app.logger.info("OSC enviado: Reset do trigger de finalização (0)")
+        
+        # Iniciar thread para reset do trigger
+        reset_thread = threading.Thread(target=reset_trigger)
+        reset_thread.daemon = True
+        reset_thread.start()
+        
+    except Exception as e:
+        app.logger.error(f"Erro ao enviar trigger de finalização: {str(e)}")
+        import traceback
+        app.logger.error(traceback.format_exc())
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
